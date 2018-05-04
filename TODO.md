@@ -1,6 +1,7 @@
 # TODO
 
 - template existing resources
-  - VPC
+  - ~~VPC~~
     - security groups
-    - subnets
+    - ~~subnets~~
+  - internet gateway
