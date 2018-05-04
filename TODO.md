@@ -2,6 +2,8 @@
 
 - template existing resources
   - ~~VPC~~
-    - security groups
+    - ~~security groups~~
+      - ~~default~~
+      - ~~dmz~~
     - ~~subnets~~
-  - internet gateway
+  - ~~internet gateway~~
