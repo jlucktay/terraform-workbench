@@ -8,4 +8,6 @@
       - ~~default~~
       - ~~dmz~~
     - ~~subnets~~
-- add DynamoDB locking on the backend
+- add to S3 backend
+  - DynamoDB locking
+  - encryption policy
