@@ -1,7 +1,8 @@
 resource "aws_s3_bucket" "state-storage" {
-  acl    = "private"
-  bucket = "james-lucktaylor-terraform"
-  region = "${data.aws_region.current.name}"
+  acl           = "private"
+  bucket        = "james-lucktaylor-terraform"
+  force_destroy = false
+  region        = "${data.aws_region.current.name}"
 
   server_side_encryption_configuration {
     rule {
@@ -20,7 +21,7 @@ resource "aws_s3_bucket" "state-storage" {
   }
 }
 
-resource "aws_s3_bucket_policy" "backend" {
+resource "aws_s3_bucket_policy" "state-storage" {
   bucket = "${aws_s3_bucket.state-storage.id}"
   policy = "${file("s3.policy.json")}"
 }
