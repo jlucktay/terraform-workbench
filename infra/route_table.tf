@@ -11,7 +11,7 @@ resource "aws_route_table" "main" {
 
 resource "aws_route" "main" {
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "igw-51e89b36"
+  gateway_id             = "${aws_internet_gateway.main.id}"
   route_table_id         = "${aws_route_table.main.id}"
 }
 
