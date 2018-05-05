@@ -11,3 +11,4 @@
 - ~~add to S3 backend~~
   - ~~DynamoDB locking~~
   - ~~encryption policy~~
+- make the `awscda` subnet lookup better
