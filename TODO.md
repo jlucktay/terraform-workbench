@@ -10,4 +10,4 @@
     - ~~subnets~~
 - add to S3 backend
   - DynamoDB locking
-  - encryption policy
+  - ~~encryption policy~~
