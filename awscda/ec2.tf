@@ -1,13 +1,19 @@
 resource "aws_instance" "awscda" {
-  ami           = "${data.aws_ami.amazon-linux-latest.image_id}"
-  instance_type = "t2.micro"
-  key_name      = "${aws_key_pair.main.key_name}"
+  ami               = "${data.aws_ami.amazon-linux-latest.image_id}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
+  instance_type     = "t2.micro"
+  key_name          = "james.lucktaylor.${data.aws_region.current.name}"
+  subnet_id         = "${data.aws_subnet.main-a.id}"
 
   lifecycle {
     ignore_changes = [
       "tags.%",
       "tags.Created",
       "tags.StopDaily",
+      "volume_tags.%",
+      "volume_tags.Created",
+      "volume_tags.Name",
+      "volume_tags.ParentInstance",
     ]
   }
 
@@ -17,20 +23,8 @@ resource "aws_instance" "awscda" {
       "Name", "james.lucktaylor.ec2.awscda"
     )
   )}"
-}
 
-resource "aws_ebs_volume" "gp2" {
-  availability_zone = "${element(data.aws_availability_zones.available.names, 2)}"
-  size              = 8
-
-  lifecycle {
-    ignore_changes = [
-      "tags.%",
-      "tags.ParentInstance",
-    ]
-  }
-
-  tags = "${merge(
+  volume_tags = "${merge(
     local.default-tags,
     map(
       "Name", "james.lucktaylor.ec2.awscda.gp2"
@@ -38,19 +32,16 @@ resource "aws_ebs_volume" "gp2" {
   )}"
 }
 
-resource "aws_volume_attachment" "gp2" {
-  device_name = "/dev/xvda"
-  instance_id = "${aws_instance.awscda.id}"
-  volume_id   = "${aws_ebs_volume.gp2.id}"
-}
-
 resource "aws_ebs_volume" "sc1" {
-  availability_zone = "${element(data.aws_availability_zones.available.names, 2)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
+  count             = "${aws_instance.awscda.count}"
   size              = 500
+  type              = "sc1"
 
   lifecycle {
     ignore_changes = [
       "tags.%",
+      "tags.Created",
       "tags.ParentInstance",
     ]
   }
@@ -70,12 +61,15 @@ resource "aws_volume_attachment" "sc1" {
 }
 
 resource "aws_ebs_volume" "st1" {
-  availability_zone = "${element(data.aws_availability_zones.available.names, 2)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
+  count             = "${aws_instance.awscda.count}"
   size              = 500
+  type              = "st1"
 
   lifecycle {
     ignore_changes = [
       "tags.%",
+      "tags.Created",
       "tags.ParentInstance",
     ]
   }
@@ -95,12 +89,15 @@ resource "aws_volume_attachment" "st1" {
 }
 
 resource "aws_ebs_volume" "standard" {
-  availability_zone = "${element(data.aws_availability_zones.available.names, 2)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
+  count             = "${aws_instance.awscda.count}"
   size              = 8
+  type              = "standard"
 
   lifecycle {
     ignore_changes = [
       "tags.%",
+      "tags.Created",
       "tags.ParentInstance",
     ]
   }
