@@ -6,7 +6,7 @@ terraform {
     bucket         = "james-lucktaylor-terraform"
     dynamodb_table = "james.lucktaylor.dynamodb.terraform"
     encrypt        = true
-    key            = "terraform.tfstate"
+    key            = "infra/terraform.tfstate"
     region         = "eu-west-1"
   }
 }
