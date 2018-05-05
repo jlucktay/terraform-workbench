@@ -1,6 +1,7 @@
 resource "aws_instance" "awscda" {
   ami           = "${data.aws_ami.amazon-linux-latest.image_id}"
   instance_type = "t2.micro"
+  key_name      = "${aws_key_pair.main.key_name}"
 
   lifecycle {
     ignore_changes = [
