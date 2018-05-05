@@ -1,4 +1,4 @@
-resource "aws_key_pair" "main" {
-  key_name   = "james.lucktaylor.eu-west-1.20171119"
+resource "aws_key_pair" "eu-west-1" {
+  key_name   = "james.lucktaylor.eu-west-1"
   public_key = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj25fB2wmNk+agCx66nVZW2vehoUg46VB7xDEpj/ZPjgDjE68qYYfuJE0HBpM4vQDkDeiHbvr80VFGxAV6j+3d0jqrt4ukiaOHF9/4jFNYOou1+ZuUHAjZnoUs4XS8APk/PGn9zmZMuVK7SoIXWq66mZI47vQF52qcyGvD5SeCMUPdZ/3AWYrKsgCOnKlmZy0lZ5qufO3WPalrvsDTHnJiv8GruQJw6W5kge4Sa6gqPhuWqE2rFI9kHZiVDtvEpvv3bO+CtSq69oHXaRqQRJj5yztVIcvZRuHLt0S+L9kJWcm/+3OsNtbvt/Ulu8mQ1llL0FrEoODgYHbBZAlWloJmwIDAQAB"
 }
