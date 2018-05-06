@@ -1,9 +1,11 @@
 resource "aws_instance" "awscda" {
-  ami               = "${data.aws_ami.amazon-linux-latest.image_id}"
-  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  instance_type     = "t2.micro"
-  key_name          = "james.lucktaylor.${data.aws_region.current.name}"
-  subnet_id         = "${data.aws_subnet.main-a.id}"
+  ami                         = "${data.aws_ami.amazon-linux-latest.image_id}"
+  associate_public_ip_address = true
+  availability_zone           = "${element(data.aws_availability_zones.available.names, count.index)}"
+  instance_type               = "t2.micro"
+  key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
+  subnet_id                   = "${data.aws_subnet.main-a.id}"
+  user_data                   = "${file("ec2.userdata.sh")}"
 
   lifecycle {
     ignore_changes = [
