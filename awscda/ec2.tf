@@ -11,7 +11,6 @@ resource "aws_instance" "awscda" {
     ignore_changes = [
       "tags.%",
       "tags.Created",
-      "tags.StopDaily",
       "volume_tags.%",
       "volume_tags.Created",
       "volume_tags.Name",
@@ -22,14 +21,15 @@ resource "aws_instance" "awscda" {
   tags = "${merge(
     local.default-tags,
     map(
-      "Name", "james.lucktaylor.ec2.awscda"
+      "Name", "james.lucktaylor.ec2.awscda",
+      "StopDaily", "Yes",
     )
   )}"
 
   volume_tags = "${merge(
     local.default-tags,
     map(
-      "Name", "james.lucktaylor.ec2.awscda.gp2"
+      "Name", "james.lucktaylor.ec2.awscda.gp2",
     )
   )}"
 }
