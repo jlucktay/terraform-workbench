@@ -12,6 +12,7 @@ do
         mkpart primary ext4 0% 100%
 
     sudo mkfs.ext4 -F "/dev/$drive"
-    sudo mkdir -pv "/mnt/$drive"
-    sudo mount "/dev/$drive" "/mnt/$drive"
+    sudo mkdir -p "/mnt/$drive"
+    echo "/dev/$drive   /mnt/$drive   ext4   defaults   0   2" | sudo tee -a /etc/fstab
+    sudo mount "/mnt/$drive"
 done
