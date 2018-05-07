@@ -1,7 +1,7 @@
 # TODO
 
 - template existing resources
-  - EC2
+  - ~~EC2~~
   - ~~internet gateway~~
   - ~~VPC~~
     - ~~security groups~~
