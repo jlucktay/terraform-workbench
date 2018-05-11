@@ -5,7 +5,7 @@ resource "aws_instance" "awscda-efs" {
   instance_type               = "t2.micro"
   key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
   subnet_id                   = "${element(data.aws_subnet_ids.main.ids, count.index)}"
-  user_data                   = "${file("ec2.awscda.efs.userdata.sh")}"
+  user_data                   = "${replace(file("ec2.awscda.efs.userdata.sh"), "!!EFS_ID!!", "${aws_efs_file_system.main.id}")}"
 
   lifecycle {
     ignore_changes = [
