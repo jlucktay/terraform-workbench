@@ -14,7 +14,7 @@ echo "!!EFS_ID!! /var/www/html efs defaults,_netdev 0 0" | sudo tee -a /etc/fsta
 
 # Create/append to web page
 sudo yum install -y jq
-TIMESTAMP=$(date '+%Y%m%d.%H%M%S%z')
+TIMESTAMP=$(date '+%Y%m%d.%H%M%S.%N%z')
 MY_IP=$(curl --silent httpbin.org/ip | jq -r '.origin')
 
 # Keep attempting to mount EFS, until it succeeds
