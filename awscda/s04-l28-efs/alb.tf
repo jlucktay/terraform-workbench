@@ -20,14 +20,6 @@ resource "aws_lb" "main" {
   )}"
 }
 
-# health_check {
-#   healthy_threshold   = 3
-#   interval            = 10
-#   target              = "HTTP:80/"
-#   timeout             = 3
-#   unhealthy_threshold = 2
-# }
-
 resource "aws_lb_listener" "main" {
   load_balancer_arn = "${aws_lb.main.arn}"
   port              = "80"
@@ -38,18 +30,15 @@ resource "aws_lb_listener" "main" {
   }
 }
 
-# listener {
-#   instance_port     = 80
-#   instance_protocol = "http"
-#   lb_port           = 80
-#   lb_protocol       = "http"
-# }
-
 resource "aws_lb_target_group" "main" {
   name     = "james-lucktaylor-awscda-efs-tg"
   port     = "80"
   protocol = "HTTP"
   vpc_id   = "${data.aws_vpc.main.id}"
+
+  # health_check {
+  # https://www.terraform.io/docs/providers/aws/r/lb_target_group.html
+  # }
 
   tags = "${merge(
     local.default-tags,
