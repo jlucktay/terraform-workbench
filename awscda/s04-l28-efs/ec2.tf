@@ -14,6 +14,22 @@ resource "aws_instance" "awscda-efs" {
     ]
   }
 
+  /*
+  provisioner "remote-exec" {
+    inline = ["rm /var/www/html/index.html"]
+    when   = "destroy"
+
+    connection {
+      agent       = false
+      port        = "22"
+      private_key = "${file("/Users/jameslucktaylor/Google Drive File Stream/My Drive/Auth/Keys/Asymmetrical/Cloudreach/AWS/james.lucktaylor.eu-west-1.pem")}"
+      timeout     = "10s"
+      type        = "ssh"
+      user        = "ec2-user"
+    }
+  }
+  */
+
   tags = "${merge(
     local.default-tags,
     map(
@@ -21,7 +37,6 @@ resource "aws_instance" "awscda-efs" {
       "StopDaily", "Yes",
     )
   )}"
-
   vpc_security_group_ids = [
     "${data.aws_security_group.default.id}",
     "${data.aws_security_group.dmz.id}",
