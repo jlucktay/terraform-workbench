@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-awsume celab
+awsume celab --session-name james.lucktaylor
 rm -rfv .terraform terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info plan.*.out
 terraform init
 terraform import aws_s3_bucket.state-storage james-lucktaylor-terraform
