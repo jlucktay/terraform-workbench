@@ -15,5 +15,6 @@ echo "!!EFS_ID!! /var/www/html efs defaults,_netdev 0 0" | sudo tee -a /etc/fsta
 
 # Create/append to web page
 sudo yum install -y jq
+TIMESTAMP=$(date '+%Y%m%d.%H%M%S')
 MY_IP=$(curl --silent httpbin.org/ip | jq -r '.origin')
-echo "$MY_IP" | sudo tee -a /var/www/html/index.html
+echo "[${TIMESTAMP}] ${MY_IP}<br />" | sudo tee -a /var/www/html/index.html
