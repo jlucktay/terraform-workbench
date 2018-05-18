@@ -9,6 +9,7 @@
     - ~~`yum install httpd -y`~~
     - ~~`service httpd start`~~
     - ~~get EFS `mount` command, and mount on `/var/www/html`~~
+    - add line to `/etc/fstab` for persistence
 - Elastic load balancer
   - port 80
   - health check interval: 10 seconds
