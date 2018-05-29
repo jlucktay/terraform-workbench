@@ -1,20 +1,22 @@
 resource "aws_instance" "fa-sftp-ec2" {
   ami                         = "${data.aws_ami.fa-sftp-ec2.id}"
   associate_public_ip_address = true
+  iam_instance_profile        = "${aws_iam_instance_profile.fa-sftp-ec2.name}"
   instance_type               = "t2.micro"
   key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
   monitoring                  = true
   subnet_id                   = "${data.aws_subnet.main-a.id}"
   user_data                   = "${file("ec2.sftp.user-data.sh")}"
 
+  depends_on = [
+    "data.aws_secretsmanager_secret.fa-sftp-ec2",
+  ]
+
   lifecycle {
     ignore_changes = [
       "tags.%",
       "tags.Created",
-
-      # "user_data",
       "volume_tags.%",
-
       "volume_tags.Created",
       "volume_tags.ParentInstance",
     ]
