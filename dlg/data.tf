@@ -1,7 +1,5 @@
 data "aws_region" "current" {}
 
-# data "aws_availability_zones" "available" {}
-
 data "aws_ami" "fa-sftp-ec2" {
   most_recent = true
 
@@ -21,15 +19,6 @@ data "aws_ami" "fa-sftp-ec2" {
   }
 }
 
-# data "aws_ami" "amazon-linux-latest" {
-#   filter {
-#     name   = "name"
-#     values = ["amzn-ami-hvm-*-x86_64-gp2"]
-#   }
-
-#   most_recent = true
-# }
-
 data "aws_security_group" "dmz" {
   filter {
     name   = "tag:Name"
@@ -42,4 +31,8 @@ data "aws_subnet" "main-a" {
     name   = "tag:Name"
     values = ["james.lucktaylor.subnet.a"]
   }
+}
+
+data "aws_secretsmanager_secret" "fa-sftp-ec2" {
+  name = "fa-sftp-ec2"
 }
