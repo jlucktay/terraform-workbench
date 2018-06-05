@@ -20,10 +20,6 @@ SecretId="fa-sftp-ec2"
 # Use the following command to do the restart:
 # # systemctl restart sshd.service
 
-# Some helpful aliases
-echo "alias lsl='ls -Al'" >> ~ec2-user/.bashrc
-echo "alias lsl='ls -Al'" >> ~root/.bashrc
-
 # Update all of the things
 yum update -y
 

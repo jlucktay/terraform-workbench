@@ -5,10 +5,6 @@ IFS=$'\n\t'
 # Drop a note when this script is done (note: 'done' might include exiting prematurely due to an error!)
 trap "echo DONE >> ~ec2-user/user-data.log" INT TERM EXIT
 
-# Some helpful aliases
-echo "alias lsl='ls -Al'" >> ~ec2-user/.bashrc
-echo "alias lsl='ls -Al'" >> ~root/.bashrc
-
 # Update all of the things
 yum update -y
 

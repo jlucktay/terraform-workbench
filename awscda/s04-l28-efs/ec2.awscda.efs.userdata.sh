@@ -5,7 +5,6 @@ TIMESTAMP=$(date '+%Y%m%d.%H%M%S.%N%z')
 
 # Do some boilerplate setup
 yum update -y
-echo "alias lsl='ls -Al'" >> ~ec2-user/.bashrc
 
 # Get some details ready for later
 yum install -y jq

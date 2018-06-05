@@ -1,7 +1,6 @@
 #!/bin/bash
 
 yum update -y
-echo "alias lsl='ls -Al'" >> ~ec2-user/.bashrc
 
 drives=( sdb sdc sdd )
 
