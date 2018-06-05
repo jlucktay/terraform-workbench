@@ -23,3 +23,24 @@ resource "aws_s3_bucket" "sydney" {
     )
   )}"
 }
+
+data "aws_iam_policy_document" "s3" {
+  statement {
+    actions = ["s3:GetObject"]
+
+    effect = "Allow"
+
+    principals {
+      identifiers = ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.s3-sydney.id}"]
+      type        = "AWS"
+    }
+
+    resources = ["${aws_s3_bucket.sydney.arn}/*"]
+  }
+}
+
+resource "aws_s3_bucket_policy" "sydney" {
+  bucket   = "${aws_s3_bucket.sydney.id}"
+  policy   = "${data.aws_iam_policy_document.s3.json}"
+  provider = "aws.sydney"
+}
