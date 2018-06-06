@@ -1,12 +1,14 @@
 resource "aws_default_route_table" "main" {
   default_route_table_id = "${aws_vpc.main.default_route_table_id}"
 
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.rtb"
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.rtb",
+      )
     )
-  )}"
+  }"
 }
 
 resource "aws_route" "main" {

@@ -5,12 +5,14 @@ resource "aws_cloudfront_origin_access_identity" "s3-sydney" {
 resource "aws_cloudfront_distribution" "s3-sydney" {
   enabled = true
 
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james-lucktaylor-cdn-s3-sydney",
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james-lucktaylor-cdn-s3-sydney",
+      )
     )
-  )}"
+  }"
 
   default_cache_behavior {
     target_origin_id       = "S3-james-lucktaylor-cdn-sydney"

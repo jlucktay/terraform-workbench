@@ -2,12 +2,14 @@ resource "aws_default_security_group" "main" {
   revoke_rules_on_delete = true
   vpc_id                 = "${aws_vpc.main.id}"
 
-  ingress {
-    from_port = 0
-    protocol  = -1
-    self      = true
-    to_port   = 0
-  }
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.sg.default",
+      )
+    )
+  }"
 
   egress {
     cidr_blocks      = ["0.0.0.0/0"]
@@ -17,8 +19,10 @@ resource "aws_default_security_group" "main" {
     to_port          = 0
   }
 
-  tags = "${merge(
-    local.default-tags,
-    map("Name", "james.lucktaylor.sg.default")
-  )}"
+  ingress {
+    from_port = 0
+    protocol  = -1
+    self      = true
+    to_port   = 0
+  }
 }

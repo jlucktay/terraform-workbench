@@ -7,6 +7,25 @@ resource "aws_instance" "awscda" {
   subnet_id                   = "${data.aws_subnet.main-a.id}"
   user_data                   = "${file("ec2.awscda.ebs.userdata.sh")}"
 
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.ec2.awscda",
+        "StopDaily", "Yes",
+      )
+    )
+  }"
+
+  volume_tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.ec2.awscda.gp2",
+      )
+    )
+  }"
+
   lifecycle {
     ignore_changes = [
       "tags.%",
@@ -17,21 +36,6 @@ resource "aws_instance" "awscda" {
       "volume_tags.ParentInstance",
     ]
   }
-
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.ec2.awscda",
-      "StopDaily", "Yes",
-    )
-  )}"
-
-  volume_tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.ec2.awscda.gp2",
-    )
-  )}"
 }
 
 resource "aws_ebs_volume" "sc1" {
@@ -40,6 +44,15 @@ resource "aws_ebs_volume" "sc1" {
   size              = 500
   type              = "sc1"
 
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.ec2.awscda.sc1",
+      )
+    )
+  }"
+
   lifecycle {
     ignore_changes = [
       "tags.%",
@@ -47,13 +60,6 @@ resource "aws_ebs_volume" "sc1" {
       "tags.ParentInstance",
     ]
   }
-
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.ec2.awscda.sc1"
-    )
-  )}"
 }
 
 resource "aws_volume_attachment" "sc1" {
@@ -69,6 +75,15 @@ resource "aws_ebs_volume" "st1" {
   size              = 500
   type              = "st1"
 
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.ec2.awscda.st1",
+      )
+    )
+  }"
+
   lifecycle {
     ignore_changes = [
       "tags.%",
@@ -76,13 +91,6 @@ resource "aws_ebs_volume" "st1" {
       "tags.ParentInstance",
     ]
   }
-
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.ec2.awscda.st1"
-    )
-  )}"
 }
 
 resource "aws_volume_attachment" "st1" {
@@ -98,6 +106,15 @@ resource "aws_ebs_volume" "standard" {
   size              = 8
   type              = "standard"
 
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.ec2.awscda.standard",
+      )
+    )
+  }"
+
   lifecycle {
     ignore_changes = [
       "tags.%",
@@ -105,13 +122,6 @@ resource "aws_ebs_volume" "standard" {
       "tags.ParentInstance",
     ]
   }
-
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.ec2.awscda.standard"
-    )
-  )}"
 }
 
 resource "aws_volume_attachment" "standard" {

@@ -1,12 +1,14 @@
 resource "aws_efs_file_system" "main" {
   creation_token = "james.lucktaylor.efs"
 
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.efs",
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.efs",
+      )
     )
-  )}"
+  }"
 }
 
 resource "aws_efs_mount_target" "main" {

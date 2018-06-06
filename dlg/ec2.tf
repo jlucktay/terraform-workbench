@@ -12,16 +12,6 @@ resource "aws_instance" "fa-sftp-ec2" {
     "data.aws_secretsmanager_secret.fa-sftp-ec2",
   ]
 
-  lifecycle {
-    ignore_changes = [
-      "tags.%",
-      "tags.Created",
-      "volume_tags.%",
-      "volume_tags.Created",
-      "volume_tags.ParentInstance",
-    ]
-  }
-
   tags = "${
     merge(
       local.default-tags,
@@ -44,12 +34,31 @@ resource "aws_instance" "fa-sftp-ec2" {
   vpc_security_group_ids = [
     "${data.aws_security_group.dmz.id}",
   ]
+
+  lifecycle {
+    ignore_changes = [
+      "tags.%",
+      "tags.Created",
+      "volume_tags.%",
+      "volume_tags.Created",
+      "volume_tags.ParentInstance",
+    ]
+  }
 }
 
 resource "aws_ebs_volume" "gp2" {
   availability_zone = "${aws_instance.fa-sftp-ec2.availability_zone}"
   size              = 100
   type              = "gp2"
+
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.ec2.fa-sftp.sdb"
+      )
+    )
+  }"
 
   lifecycle {
     ignore_changes = [
@@ -58,13 +67,6 @@ resource "aws_ebs_volume" "gp2" {
       "tags.ParentInstance",
     ]
   }
-
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james.lucktaylor.ec2.fa-sftp.sdb"
-    )
-  )}"
 }
 
 resource "aws_volume_attachment" "gp2" {

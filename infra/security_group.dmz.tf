@@ -4,10 +4,14 @@ resource "aws_security_group" "dmz" {
   revoke_rules_on_delete = true
   vpc_id                 = "${aws_vpc.main.id}"
 
-  tags = "${merge(
-    local.default-tags,
-    map("Name", "james.lucktaylor.sg.dmz")
-  )}"
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james.lucktaylor.sg.dmz",
+      )
+    )
+  }"
 }
 
 resource "aws_security_group_rule" "dmz-allow-ssh-from-everywhere-ipv4" {

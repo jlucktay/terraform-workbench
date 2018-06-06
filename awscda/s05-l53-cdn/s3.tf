@@ -3,12 +3,14 @@ resource "aws_s3_bucket" "london" {
   provider = "aws.london"
   region   = "eu-west-2"
 
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james-lucktaylor-cdn-london",
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james-lucktaylor-cdn-london",
+      )
     )
-  )}"
+  }"
 }
 
 resource "aws_s3_bucket" "sydney" {
@@ -16,12 +18,14 @@ resource "aws_s3_bucket" "sydney" {
   provider = "aws.sydney"
   region   = "ap-southeast-2"
 
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james-lucktaylor-cdn-sydney",
+  tags = "${
+    merge(
+      local.default-tags,
+      map(
+        "Name", "james-lucktaylor-cdn-sydney",
+      )
     )
-  )}"
+  }"
 }
 
 data "aws_iam_policy_document" "s3" {
@@ -30,12 +34,12 @@ data "aws_iam_policy_document" "s3" {
 
     effect = "Allow"
 
+    resources = ["${aws_s3_bucket.sydney.arn}/*"]
+
     principals {
       identifiers = ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.s3-sydney.id}"]
       type        = "AWS"
     }
-
-    resources = ["${aws_s3_bucket.sydney.arn}/*"]
   }
 }
 
