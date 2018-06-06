@@ -11,23 +11,15 @@ if [ -z "${efs_id}" ]; then
     exit 1
 fi
 
-# Capture user-data kickoff timestamp
-TIMESTAMP=$(date '+%Y%m%d.%H%M%S.%N%z')
-
-# Do some boilerplate setup
+# Update/fetch some packages
 yum update -y
+yum install -y amazon-efs-utils httpd jq
 
-# Get some details ready for later
-yum install -y jq
-MY_IP=$(curl --silent httpbin.org/ip | jq -r '.origin')
-
-# Sort out Apache (httpd)
-yum install -y httpd
-service httpd start
+# Sort out Apache (httpd) and its (auto)start
 chkconfig httpd on
+service httpd start
 
 # Sort out EFS volume mount
-yum install -y amazon-efs-utils
 # shellcheck disable=2154
 echo "${efs_id} /var/www/html efs defaults,_netdev 0 0" | tee -a /etc/fstab
 
@@ -37,4 +29,5 @@ until mount /var/www/html; do
 done
 
 # Create/append to web page, with timestamp and IP
-echo "[$TIMESTAMP] $MY_IP<br />" | tee -a /var/www/html/index.html
+echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $(curl --silent httpbin.org/ip | jq -r '.origin')<br />" |
+    tee -a /var/www/html/index.html
