@@ -5,7 +5,7 @@ resource "aws_instance" "awscda-efs" {
   instance_type               = "t2.micro"
   key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
   subnet_id                   = "${element(data.aws_subnet_ids.main.ids, count.index)}"
-  user_data                   = "${replace(file("ec2.awscda.efs.userdata.sh"), "!!EFS_ID!!", "${aws_efs_file_system.main.id}")}"
+  user_data                   = "${data.template_file.user-data.rendered}"
 
   tags = "${
     merge(
@@ -29,3 +29,20 @@ resource "aws_instance" "awscda-efs" {
     ]
   }
 }
+
+data "template_file" "user-data" {
+  template = "${file("${path.module}/ec2.awscda.efs.userdata.sh")}"
+
+  vars {
+    efs_id = "${aws_efs_file_system.main.id}"
+  }
+}
+
+# data "template_cloudinit_config" "user-data" {
+#   base64_encode = false
+#   gzip          = false
+#
+#   part {
+#     content = "${data.template_file.user-data.rendered}"
+#   }
+# }
