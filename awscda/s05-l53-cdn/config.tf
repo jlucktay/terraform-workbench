@@ -6,12 +6,11 @@ terraform {
     bucket         = "james-lucktaylor-terraform"
     dynamodb_table = "james.lucktaylor.dynamodb.terraform"
     encrypt        = true
-    region         = "eu-west-1"
   }
 }
 
 provider "aws" {
-  region = "eu-west-1"
+  region = "${var.region}"
 }
 
 provider "aws" {

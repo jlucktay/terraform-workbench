@@ -1,5 +1,5 @@
-resource "aws_key_pair" "eu-west-1" {
-  key_name   = "james.lucktaylor.eu-west-1"
+resource "aws_key_pair" "my-public-key" {
+  key_name   = "james.lucktaylor.${var.region}"
   public_key = "${file("~/.ssh/id_rsa.pub")}"
 }
 
