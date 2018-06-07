@@ -1,0 +1,474 @@
+{
+    "Metadata": {
+        "AWS::CloudFormation::Authentication": {
+            "S3AccessCredsBKProvisioning": {
+                "type": "S3",
+                "roleName": {
+                    "Ref": "RLEC2Instances"
+                },
+                "buckets": {
+                    "Ref": "BKProvisioning"
+                }
+            }
+        },
+        "AWS::CloudFormation::Init": {
+            "configSets": {
+                "default": [
+                    "installCloudWatchLogsSupport",
+                    "EBSMountforTemporaryFiles",
+                    "EFSMonitoringSetup",
+                    "EFSMount",
+                    "EFSConfiginECS",
+                    "enableLogRotation",
+                    "CfnHupConfig",
+                    "Monitoring",
+                    "Finalising"
+                ]
+            },
+            "installCloudWatchLogsSupport": {
+                "packages": {
+                    "yum": {
+                        "awslogs": []
+                    }
+                },
+                "files": {
+                    "/etc/awslogs/awslogs.conf": {
+                        "source": {
+                            "Fn::Sub": "https://s3-eu-west-1.amazonaws.com/${BKProvisioning}/InfraCode/ConfigFiles/awslogs.conf.ecs.mustache"
+                        },
+                        "context": {
+                            "CloudFormationLogs": {
+                                "Ref": "CloudFormationLogs"
+                            },
+                            "ECSService": {
+                                "Ref": "ECSService"
+                            },
+                            "EnvironmentName": {
+                                "Ref": "EnvironmentName"
+                            },
+                            "EnvironmentType": {
+                                "Ref": "EnvironmentType"
+                            }
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/awslogs/awscli.conf": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "[plugins]\n",
+                                    "cwlogs = cwlogs\n",
+                                    "[default]\n",
+                                    "region = ",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "\n"
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/logrotate.d/ecs-agent": {
+                        "source": {
+                            "Fn::Sub": "https://s3-eu-west-1.amazonaws.com/${BKProvisioning}/InfraCode/ConfigFiles/logrotate"
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                },
+                "commands": {
+                    "01_create_state_directory": {
+                        "command": "mkdir -p /var/awslogs/state"
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "awslogs": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/awslogs/awslogs.conf",
+                                "/etc/awslogs/awscli.conf"
+                            ]
+                        }
+                    }
+                }
+            },
+            "EBSMountforTemporaryFiles": {
+                "commands": {
+                    "01_createdir_EBS_volume": {
+                        "command": "mkdir /mnt/EBSTemporaryStorage",
+                        "ignoreErrors": false,
+                        "test": "test ! -d /mnt/EBSTemporaryStorage"
+                    },
+                    "02_modify_fstab_EBS_volume": {
+                        "command": "echo -e \"/dev/xvdm      /mnt/EBSTemporaryStorage      ext4      defaults,noatime 0 2\" | tee -a /etc/fstab ",
+                        "ignoreErrors": false,
+                        "test": "! grep -q '/dev/xvdm' /etc/fstab"
+                    },
+                    "03_format_EBS_volume": {
+                        "command": "mkfs -t ext4 /dev/xvdm",
+                        "ignoreErrors": false,
+                        "test": "[ `file -b -s /dev/xvdm` == \"data\" ]"
+                    },
+                    "04_mount_EBS_volume": {
+                        "command": "mount /mnt/EBSTemporaryStorage",
+                        "ignoreErrors": false,
+                        "test": "! grep -q /mnt/EBSTemporaryStorage /proc/mounts"
+                    }
+                },
+                "files": {
+                    "/etc/cron.d/clean_EBSTemporaryStorage": {
+                        "content": {
+                            "Fn::Join": [
+                                "\n",
+                                [
+                                    "# File content controlled by Cloudformation init",
+                                    "00 1 * * * root /usr/bin/find /mnt/EBSTemporaryStorage -type f -mtime +14 -delete"
+                                ]
+                            ]
+                        },
+                        "mode": "000440",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "crond": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/cron.d/clean_EBSTemporaryStorage"
+                            ]
+                        }
+                    }
+                }
+            },
+            "EFSMonitoringSetup": {
+                "packages": {
+                    "yum": {
+                        "nfs-utils": []
+                    }
+                },
+                "files": {
+                    "/usr/local/bin/post_nfsstat": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "#!/bin/bash\n",
+                                    "\n",
+                                    "INPUT=\"$(cat)\"\n",
+                                    "CW_JSON_OPEN='{ \"Namespace\": \"EFS\", \"MetricData\": [ '\n",
+                                    "CW_JSON_CLOSE=' ] }'\n",
+                                    "CW_JSON_METRIC=''\n",
+                                    "METRIC_COUNTER=0\n",
+                                    "\n",
+                                    "for COL in 1 2 3 4 5 6; do\n",
+                                    "\n",
+                                    " COUNTER=0\n",
+                                    " METRIC_FIELD=$COL\n",
+                                    " DATA_FIELD=$(($COL+($COL-1)))\n",
+                                    "\n",
+                                    " while read line; do\n",
+                                    "   if [[ COUNTER -gt 0 ]]; then\n",
+                                    "\n",
+                                    "     LINE=`echo $line | tr -s ' ' `\n",
+                                    "     AWS_COMMAND=\"aws cloudwatch put-metric-data --region ",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "\"\n",
+                                    "     MOD=$(( $COUNTER % 2))\n",
+                                    "\n",
+                                    "     if [ $MOD -eq 1 ]; then\n",
+                                    "       METRIC_NAME=`echo $LINE | cut -d ' ' -f $METRIC_FIELD`\n",
+                                    "     else\n",
+                                    "       METRIC_VALUE=`echo $LINE | cut -d ' ' -f $DATA_FIELD`\n",
+                                    "     fi\n",
+                                    "\n",
+                                    "     if [[ -n \"$METRIC_NAME\" && -n \"$METRIC_VALUE\" ]]; then\n",
+                                    "       INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)\n",
+                                    "       CW_JSON_METRIC=\"$CW_JSON_METRIC { \\\"MetricName\\\": \\\"$METRIC_NAME\\\", \\\"Dimensions\\\": [{\\\"Name\\\": \\\"InstanceId\\\", \\\"Value\\\": \\\"$INSTANCE_ID\\\"} ], \\\"Value\\\": $METRIC_VALUE },\"\n",
+                                    "       unset METRIC_NAME\n",
+                                    "       unset METRIC_VALUE\n",
+                                    "\n",
+                                    "       METRIC_COUNTER=$((METRIC_COUNTER+1))\n",
+                                    "       if [ $METRIC_COUNTER -eq 20 ]; then\n",
+                                    "         # 20 is max metric collection size, so we have to submit here\n",
+                                    "         aws cloudwatch put-metric-data --region ",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    " --cli-input-json \"`echo $CW_JSON_OPEN ${CW_JSON_METRIC%?} $CW_JSON_CLOSE`\"\n",
+                                    "\n",
+                                    "         # reset\n",
+                                    "         METRIC_COUNTER=0\n",
+                                    "         CW_JSON_METRIC=''\n",
+                                    "       fi\n",
+                                    "     fi  \n",
+                                    "\n",
+                                    "\n",
+                                    "\n",
+                                    "     COUNTER=$((COUNTER+1))\n",
+                                    "   fi\n",
+                                    "\n",
+                                    "   if [[ \"$line\" == \"Client nfs v4:\" ]]; then\n",
+                                    "     # the next line is the good stuff \n",
+                                    "     COUNTER=$((COUNTER+1))\n",
+                                    "   fi\n",
+                                    " done <<< \"$INPUT\"\n",
+                                    "done\n",
+                                    "\n",
+                                    "# submit whatever is left\n",
+                                    "aws cloudwatch put-metric-data --region ",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    " --cli-input-json \"`echo $CW_JSON_OPEN ${CW_JSON_METRIC%?} $CW_JSON_CLOSE`\""
+                                ]
+                            ]
+                        },
+                        "mode": "000755",
+                        "owner": "ec2-user",
+                        "group": "ec2-user"
+                    },
+                    "/tmp/crontab": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "* * * * * /usr/sbin/nfsstat | /usr/local/bin/post_nfsstat\n"
+                                ]
+                            ]
+                        },
+                        "owner": "ec2-user",
+                        "group": "ec2-user"
+                    }
+                }
+            },
+            "EFSMount": {
+                "commands": {
+                    "01_createdir_volume1": {
+                        "command": {
+                            "Fn::Sub": "mkdir ${MountPointVolume1}"
+                        },
+                        "ignoreErrors": false,
+                        "test": {
+                            "Fn::Sub": "test ! -d ${MountPointVolume1}"
+                        }
+                    },
+                    "02_createdir_volume2": {
+                        "command": {
+                            "Fn::Sub": "mkdir ${MountPointVolume2}"
+                        },
+                        "ignoreErrors": false,
+                        "test": {
+                            "Fn::Sub": "test ! -d ${MountPointVolume2}"
+                        }
+                    },
+                    "03_modify_fstab_1st_volume": {
+                        "command": {
+                            "Fn::Sub": "echo -e \"${FSVolume1ID}.efs.${AWS::Region}.amazonaws.com:/      ${MountPointVolume1} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0\" | tee -a /etc/fstab "
+                        },
+                        "ignoreErrors": false,
+                        "test": {
+                            "Fn::Sub": "! grep -q ${FSVolume1ID} /etc/fstab"
+                        }
+                    },
+                    "04_modify_fstab_2nd_volume": {
+                        "command": {
+                            "Fn::Sub": "echo -e \"${FSVolume2ID}.efs.${AWS::Region}.amazonaws.com:/      ${MountPointVolume2} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0\" | tee -a /etc/fstab "
+                        },
+                        "ignoreErrors": false,
+                        "test": {
+                            "Fn::Sub": "! grep -q ${FSVolume2ID} /etc/fstab"
+                        }
+                    },
+                    "05_mount_1st_volume": {
+                        "command": {
+                            "Fn::Sub": "mount ${MountPointVolume1}"
+                        },
+                        "ignoreErrors": false,
+                        "test": {
+                            "Fn::Sub": "! grep -q ${MountPointVolume1} /proc/mounts"
+                        }
+                    },
+                    "06_mount_2st_volume": {
+                        "command": {
+                            "Fn::Sub": "mount ${MountPointVolume2}"
+                        },
+                        "ignoreErrors": false,
+                        "test": {
+                            "Fn::Sub": "! grep -q ${MountPointVolume2} /proc/mounts"
+                        }
+                    }
+                }
+            },
+            "EFSConfiginECS": {
+                "commands": {
+                    "01_add_instance_to_cluster": {
+                        "command": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "#!/bin/bash\n",
+                                    "echo -e 'ECS_CLUSTER=",
+                                    {
+                                        "Ref": "CLServices"
+                                    },
+                                    " \nECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=30m' > /etc/ecs/ecs.config \n"
+                                ]
+                            ]
+                        }
+                    },
+                    "02_restart_services": {
+                        "command": "service docker restart && start ecs"
+                    }
+                }
+            },
+            "enableLogRotation": {
+                "files": {
+                    "/etc/logrotate.d/other_log_rotation": {
+                        "source": {
+                            "Fn::Sub": "https://s3-eu-west-1.amazonaws.com/${BKProvisioning}/InfraCode/ConfigFiles/logrotate"
+                        },
+                        "mode": "000440",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/cron.d/clean_var_log": {
+                        "content": {
+                            "Fn::Join": [
+                                "\n",
+                                [
+                                    "# File content controlled by Cloudformation init",
+                                    "00 3 * * * root /usr/bin/find /var/log -type f -mtime +14 -delete"
+                                ]
+                            ]
+                        },
+                        "mode": "000440",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "crond": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/cron.d/clean_var_log"
+                            ]
+                        }
+                    }
+                }
+            },
+            "CfnHupConfig": {
+                "files": {
+                    "/etc/cfn/cfn-hup.conf": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "[main]\n",
+                                    "stack=",
+                                    {
+                                        "Ref": "AWS::StackId"
+                                    },
+                                    "\n",
+                                    "region=",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "\n"
+                                ]
+                            ]
+                        },
+                        "mode": "000400",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "[cfn-auto-reloader-hook]\n",
+                                    "triggers=post.update\n",
+                                    "path=Resources.LCContainerInstances.Metadata.AWS::CloudFormation::Init\n",
+                                    "action=/opt/aws/bin/cfn-init -v ",
+                                    "         --stack ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "         --resource LCContainerInstances ",
+                                    "         --region ",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "\n",
+                                    "runas=root\n"
+                                ]
+                            ]
+                        }
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "cfn-hup": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/cfn/cfn-hup.conf",
+                                "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                            ]
+                        }
+                    }
+                }
+            },
+            "Monitoring": {
+                "packages": {
+                    "yum": {
+                        "perl-Switch": [],
+                        "perl-DateTime": [],
+                        "perl-Digest-SHA": [],
+                        "perl-Sys-Syslog": [],
+                        "perl-LWP-Protocol-https": []
+                    }
+                },
+                "sources": {
+                    "/root": "http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip"
+                },
+                "files": {
+                    "/etc/cron.d/push_cw_metrics": {
+                        "source": {
+                            "Fn::Sub": "https://s3-eu-west-1.amazonaws.com/${BKProvisioning}/InfraCode/ConfigFiles/monitoring_crontab"
+                        },
+                        "mode": "000600",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                }
+            },
+            "Finalising": {
+                "commands": {
+                    "01_remove_cfn-init_backups_01": {
+                        "command": "rm -f /etc/logrotate.d/*.bak"
+                    },
+                    "01_remove_cfn-init_backups_02": {
+                        "command": "rm -f /etc/cron.d/*.bak"
+                    }
+                }
+            }
+        }
+    }
+}

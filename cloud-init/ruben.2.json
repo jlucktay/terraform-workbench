@@ -1,0 +1,527 @@
+{
+    "Metadata": {
+        "AWS::CloudFormation::Authentication": {
+            "S3AccessCreds": {
+                "type": "S3",
+                "roleName": {
+                    "Ref": "RLApplication"
+                },
+                "buckets": [
+                    {
+                        "Ref": "BKProvisioning"
+                    },
+                    {
+                        "Ref": "BKApplicationPackages"
+                    }
+                ]
+            }
+        },
+        "AWS::CloudFormation::Init": {
+            "configSets": {
+                "MarlinMS3AppConfigSet": [
+                    "cfnbase",
+                    "installLogs",
+                    "InstallApacheAndPHP",
+                    "ConfigureApacheAndPHP",
+                    "InstallMarlinMS3App",
+                    "configureMarlinMS3App",
+                    "patchOpenSSLLibrary"
+                ]
+            },
+            "cfnbase": {
+                "files": {
+                    "/etc/cfn/cfn-hup.conf": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "[main]\n",
+                                    "stack=",
+                                    {
+                                        "Ref": "AWS::StackId"
+                                    },
+                                    "\n",
+                                    "region=",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "\n",
+                                    "interval=10\n",
+                                    "verbose=false\n"
+                                ]
+                            ]
+                        },
+                        "mode": "000400",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "[cfn-auto-reloader-hook]\n",
+                                    "triggers=post.update\n",
+                                    "path=Resources.LCApplicationServers.Metadata.AWS::CloudFormation::Init\n",
+                                    "action=/opt/aws/bin/cfn-init ",
+                                    " --stack ",
+                                    {
+                                        "Ref": "AWS::StackId"
+                                    },
+                                    " --resource LCApplicationServers",
+                                    " --configsets MarlinMS3AppConfigSet ",
+                                    " --region ",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "\n",
+                                    "runas=root\n"
+                                ]
+                            ]
+                        }
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "cfn-hup": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/cfn/cfn-hup.conf",
+                                "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                            ]
+                        }
+                    }
+                }
+            },
+            "installLogs": {
+                "packages": {
+                    "yum": {
+                        "awslogs": [
+                            "1.1.2"
+                        ]
+                    }
+                },
+                "files": {
+                    "/etc/awslogs/awslogs.conf": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/awslogs.conf.mustache"
+                                ]
+                            ]
+                        },
+                        "context": {
+                            "LGCloudFormation": {
+                                "Ref": "LGCloudFormation"
+                            },
+                            "LGSystemLogs": {
+                                "Ref": "LGSystemLogs"
+                            },
+                            "LGApacheLogs": {
+                                "Ref": "LGApacheLogs"
+                            },
+                            "EnvironmentName": {
+                                "Ref": "EnvironmentName"
+                            },
+                            "EnvironmentType": {
+                                "Ref": "EnvironmentType"
+                            }
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/awslogs/awscli.conf": {
+                        "content": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "[plugins]\n",
+                                    "cwlogs = cwlogs\n",
+                                    "[default]\n",
+                                    "region = ",
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "\n"
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                },
+                "commands": {
+                    "01_create_state_directory": {
+                        "command": "mkdir -p /var/awslogs/state"
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "awslogs": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/awslogs/awslogs.conf",
+                                "/etc/awslogs/awscli.conf"
+                            ]
+                        }
+                    }
+                }
+            },
+            "InstallApacheAndPHP": {
+                "packages": {
+                    "yum": {
+                        "httpd": [
+                            "2.2.32"
+                        ],
+                        "mod_ssl": [
+                            "2.2.32"
+                        ],
+                        "php": [],
+                        "php-mysql": [],
+                        "php-mcrypt": []
+                    }
+                }
+            },
+            "ConfigureApacheAndPHP": {
+                "files": {
+                    "/etc/httpd/conf/httpd.conf": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/httpd.conf.mustache"
+                                ]
+                            ]
+                        },
+                        "context": {}
+                    },
+                    "/etc/httpd/conf.d/bt.conf": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/httpd_bt.conf.mustache"
+                                ]
+                            ]
+                        },
+                        "context": {
+                            "ServerName": {
+                                "Ref": "MarlinMS3DNS"
+                            }
+                        }
+                    },
+                    "/etc/httpd/conf.d/ssl.conf": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/httpd_ssl.conf.mustache"
+                                ]
+                            ]
+                        },
+                        "context": {
+                            "ServerName": {
+                                "Ref": "MarlinMS3DNS"
+                            },
+                            "MtmoRootCertificateFileName": "mtmoroot.cer"
+                        }
+                    },
+                    "/etc/pki/tls/private/certificate.key": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/certs/ms3-license.",
+                                    {
+                                        "Ref": "EnvironmentType"
+                                    },
+                                    ".ms3.c4.aws.com.key"
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/pki/tls/certs/certificate.pem": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/certs/ms3-license.",
+                                    {
+                                        "Ref": "EnvironmentType"
+                                    },
+                                    ".ms3.c4.aws.com.pem"
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/pki/tls/certs/mtmoroot.cer": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/certs/",
+                                    {
+                                        "Fn::If": [
+                                            "IsProd",
+                                            "mtmoroot-liveenv.cer",
+                                            "mtmoroot-testenv.cer"
+                                        ]
+                                    }
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/pki/tls/certs/SymantecClass3SecureServerCA-G4.pem": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/certs/SymantecClass3SecureServerCA-G4.pem"
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "httpd": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/httpd/conf.d/ssl.conf",
+                                "/etc/httpd/conf.d/bt.conf",
+                                "/etc/httpd/conf/httpd.conf",
+                                "/etc/pki/tls/certs/SymantecClass3SecureServerCA-G4.pem",
+                                "/etc/pki/tls/certs/mtmoroot.cer",
+                                "/etc/pki/tls/certs/certificate.pem",
+                                "/etc/pki/tls/private/certificate.key"
+                            ]
+                        }
+                    }
+                }
+            },
+            "InstallMarlinMS3App": {
+                "sources": {
+                    "/var/www/html": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "https://s3-eu-west-1.amazonaws.com/",
+                                {
+                                    "Ref": "BKApplicationPackages"
+                                },
+                                "/marlinms3-",
+                                {
+                                    "Ref": "MarlinMS3SoftwareVersion"
+                                },
+                                ".zip"
+                            ]
+                        ]
+                    }
+                },
+                "commands": {
+                    "01_set_permissions_on_DocumentRoot": {
+                        "command": "find /var/www/html -type d -exec chmod 755 {} \\; && find /var/www/html -type f -exec chmod 644 {} \\;"
+                    },
+                    "02_set_owner_on_DocumentRoot": {
+                        "command": "chown -R apache.apache /var/www/html"
+                    }
+                }
+            },
+            "configureMarlinMS3App": {
+                "files": {
+                    "/etc/ms3/variables.bt.php": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/variables.bt.php.mustache"
+                                ]
+                            ]
+                        },
+                        "context": {
+                            "DBRDSEndpoint": {
+                                "Ref": "DBRDSEndpoint"
+                            },
+                            "MarlinMS3DNS": {
+                                "Ref": "MarlinMS3DNS"
+                            },
+                            "DBName": {
+                                "Ref": "DBName"
+                            },
+                            "DBUsername": {
+                                "Ref": "DBUsername"
+                            },
+                            "DBPassword": {
+                                "Ref": "DBPassword"
+                            },
+                            "DBInsertUsername": {
+                                "Ref": "DBInsertUsername"
+                            },
+                            "DBInsertPassword": {
+                                "Ref": "DBInsertPassword"
+                            }
+                        }
+                    },
+                    "/etc/ms3/variables.sas.php": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/variables.sas.php.mustache"
+                                ]
+                            ]
+                        },
+                        "context": {
+                            "DBRDSEndpoint": {
+                                "Ref": "DBRDSEndpoint"
+                            },
+                            "DBName": {
+                                "Ref": "DBName"
+                            },
+                            "DBUsername": {
+                                "Ref": "DBUsername"
+                            },
+                            "DBPassword": {
+                                "Ref": "DBPassword"
+                            }
+                        }
+                    },
+                    "/etc/ms3/ms3config.conf": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/ms3config.conf.",
+                                    {
+                                        "Ref": "EnvironmentType"
+                                    }
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/pki/tls/certs/aws-rds-mysql-ssl-ca-cert.pem": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKProvisioning"
+                                    },
+                                    "/InfraCode/ConfigFiles/certs/aws-rds-mysql-ssl-ca-cert.pem"
+                                ]
+                            ]
+                        },
+                        "mode": "000444",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                }
+            },
+            "patchOpenSSLLibrary": {
+                "files": {
+                    "/tmp/openssl-1.0.1k-15.96.amzn1.youview0.x86_64.rpm": {
+                        "source": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "https://s3-eu-west-1.amazonaws.com/",
+                                    {
+                                        "Ref": "BKApplicationPackages"
+                                    },
+                                    "/openssl-1.0.1k-15.96.amzn1.youview0.x86_64.rpm"
+                                ]
+                            ]
+                        }
+                    }
+                },
+                "commands": {
+                    "01_install_patched_openssl": {
+                        "command": "yum install -y /tmp/openssl-1.0.1k-15.96.amzn1.youview0.x86_64.rpm",
+                        "ignoreErrors": "false"
+                    },
+                    "02_add_env_variable": {
+                        "command": "echo 'export LIBCRYPTO_IGNORE_CERT_EXPIRATION=true' >> /etc/sysconfig/httpd",
+                        "ignoreErrors": "false"
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "httpd": {
+                            "enabled": "true",
+                            "ensureRunning": "true",
+                            "commands": [
+                                "02_add_env_variable"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
