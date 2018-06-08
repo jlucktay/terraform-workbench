@@ -33,3 +33,5 @@ resource "aws_default_network_acl" "main" {
     to_port    = 0
   }
 }
+
+# TODO: consider implementing a little bit more security for the private subnet somewhere around here 🤔
