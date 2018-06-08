@@ -30,6 +30,7 @@ data "aws_subnet_ids" "main" {
 
   tags {
     Owner = "james.lucktaylor"
+    Tier  = "Public"
   }
 }
 

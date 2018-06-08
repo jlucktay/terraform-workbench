@@ -21,6 +21,6 @@ data "aws_security_group" "dmz" {
 data "aws_subnet" "main-a" {
   filter {
     name   = "tag:Name"
-    values = ["james.lucktaylor.subnet.a"]
+    values = ["james.lucktaylor.subnet.a.public"]
   }
 }

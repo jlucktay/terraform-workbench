@@ -10,6 +10,7 @@ resource "aws_subnet" "private" {
       local.default-tags,
       map(
         "Name", "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.private",
+        "Tier", "Private",
       )
     )
   }"
@@ -27,6 +28,7 @@ resource "aws_subnet" "public" {
       local.default-tags,
       map(
         "Name", "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.public",
+        "Tier", "Public",
       )
     )
   }"
