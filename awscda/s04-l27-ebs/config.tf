@@ -4,7 +4,7 @@ terraform {
   backend "s3" {
     acl            = "private"
     bucket         = "james-lucktaylor-terraform"
-    dynamodb_table = "james.lucktaylor.dynamodb.terraform"
+    dynamodb_table = "james.lucktaylor.terraform"
     encrypt        = true
   }
 }
