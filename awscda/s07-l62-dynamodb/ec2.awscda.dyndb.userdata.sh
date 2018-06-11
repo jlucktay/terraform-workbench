@@ -19,14 +19,18 @@ echo "<?php phpinfo();?>" > test.php
 
 # Install Composer
 export HOME="/root"
-echo "'curl'ing Composer installer..."
+echo "'curl'ing Composer installer... (HOME='$HOME')"
 curl -sS https://getcomposer.org/installer | php
 
 # Get PHP AWS SDK using Composer
-echo "'php'ing Composer installer..."
+echo "'php'ing Composer to install PHP AWS SDK..."
 php composer.phar require aws/aws-sdk-php
 
-# Get DynamoDB scripts from GitHub and personalise table names
+# Get DynamoDB scripts from GitHub
+echo "Cloning 'acloudguru/dynamodb'..."
 git clone https://github.com/acloudguru/dynamodb
 cd dynamodb
-sed -e "s/tableName = '/tableName = 'james.lucktaylor./g" --in-place ./*.php
+
+# Personalise table names
+echo "'sed'ing $(pwd)/*.php..."
+sed --expression "s/tableName = '/tableName = 'james.lucktaylor./g" --in-place ./*.php
