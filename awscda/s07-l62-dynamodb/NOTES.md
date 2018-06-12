@@ -22,7 +22,7 @@ echo "<?php phpinfo();?>" > test.php
 git clone https://github.com/acloudguru/dynamodb
 ```
 
-TODO: Regex to prefix tablenames
+~~TODO: Regex to prefix tablenames~~
 
 Example: `$tableName = 'ProductCatalog';`
 
