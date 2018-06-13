@@ -22,8 +22,15 @@ resource "aws_cloudfront_distribution" "s3-sydney" {
     target_origin_id       = "S3-james-lucktaylor-cdn-sydney"
     viewer_protocol_policy = "redirect-to-https"
 
-    allowed_methods = ["GET", "HEAD"]
-    cached_methods  = ["GET", "HEAD"]
+    allowed_methods = [
+      "GET",
+      "HEAD",
+    ]
+
+    cached_methods = [
+      "GET",
+      "HEAD",
+    ]
 
     forwarded_values {
       query_string = false
