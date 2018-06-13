@@ -5,6 +5,10 @@ resource "aws_cloudfront_origin_access_identity" "s3-sydney" {
 resource "aws_cloudfront_distribution" "s3-sydney" {
   enabled = true
 
+  depends_on = [
+    "aws_s3_bucket_object.awesome-sydney",
+  ]
+
   tags = "${
     merge(
       local.default-tags,
