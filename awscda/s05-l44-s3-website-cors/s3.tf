@@ -30,6 +30,12 @@ resource "aws_s3_bucket" "website-cors" {
     )
   }"
 
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = ["http://${aws_s3_bucket.website-index.website_endpoint}"]
+    max_age_seconds = 3000
+  }
+
   website {
     index_document = "loadpage.html"
   }
