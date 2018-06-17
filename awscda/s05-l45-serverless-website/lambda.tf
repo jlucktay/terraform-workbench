@@ -11,7 +11,7 @@ resource "aws_lambda_function" "serverless" {
     merge(
       local.default-tags,
       map(
-        "Description", "james.lucktaylor - Serverless website with the power of the cloud!",
+        "Description", "james.lucktaylor - Serverless website with the power of the cloud",
         "Name", "james-lucktaylor-awscda-serverless",
       )
     )
