@@ -1,5 +1,4 @@
 resource "aws_lambda_function" "serverless" {
-  description      = "james.lucktaylor - Serverless website with the power of the cloud!"
   filename         = "hellocloudgurus.zip"
   function_name    = "james-lucktaylor-awscda-serverless"
   handler          = "hellocloudgurus.lambda_handler"
@@ -28,5 +27,5 @@ resource "aws_lambda_permission" "serverless" {
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.serverless.function_name}"
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.serverless.execution_arn}/*/GET/resource"
+  source_arn    = "${aws_api_gateway_rest_api.serverless.execution_arn}/*/GET/${aws_api_gateway_resource.serverless.path_part}"
 }

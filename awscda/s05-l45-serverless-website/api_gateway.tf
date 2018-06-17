@@ -9,7 +9,7 @@ resource "aws_api_gateway_rest_api" "serverless" {
 
 resource "aws_api_gateway_resource" "serverless" {
   parent_id   = "${aws_api_gateway_rest_api.serverless.root_resource_id}"
-  path_part   = "resource"
+  path_part   = "serverlessWebsite"
   rest_api_id = "${aws_api_gateway_rest_api.serverless.id}"
 }
 
@@ -41,13 +41,10 @@ resource "aws_api_gateway_method_response" "serverless" {
 }
 
 resource "aws_api_gateway_deployment" "serverless" {
-  depends_on  = ["aws_api_gateway_integration.serverless"]
   rest_api_id = "${aws_api_gateway_rest_api.serverless.id}"
-  stage_name  = "dev"
-}
+  stage_name  = "prod"
 
-resource "aws_api_gateway_stage" "serverless" {
-  deployment_id = "${aws_api_gateway_deployment.serverless.id}"
-  rest_api_id   = "${aws_api_gateway_rest_api.serverless.id}"
-  stage_name    = "prod"
+  depends_on = [
+    "aws_api_gateway_integration.serverless",
+  ]
 }
