@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "serverless-website" {
-  bucket = "james-lucktaylor-serverless-website"
+  bucket = "james-lucktaylor-awscda-serverless-website"
   region = "${var.region}"
 
   tags = "${

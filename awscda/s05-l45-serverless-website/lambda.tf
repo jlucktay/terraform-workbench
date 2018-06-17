@@ -1,6 +1,6 @@
 resource "aws_lambda_function" "serverless" {
   filename         = "hellocloudgurus.zip"
-  function_name    = "james-lucktaylor-awscda-serverless"
+  function_name    = "james-lucktaylor-awscda-serverless-website"
   handler          = "hellocloudgurus.lambda_handler"
   role             = "${aws_iam_role.serverless.arn}"
   runtime          = "python3.6"
@@ -11,7 +11,7 @@ resource "aws_lambda_function" "serverless" {
       local.default-tags,
       map(
         "Description", "james.lucktaylor - Serverless website with the power of the cloud",
-        "Name", "james-lucktaylor-awscda-serverless",
+        "Name", "james-lucktaylor-awscda-serverless-website",
       )
     )
   }"

@@ -7,7 +7,7 @@ resource "aws_s3_bucket_object" "serverless-index" {
   tags         = "${local.default-tags}"
 }
 
-resource "aws_s3_bucket_object" "website-error" {
+resource "aws_s3_bucket_object" "serverless-error" {
   acl          = "public-read"
   bucket       = "${aws_s3_bucket.serverless-website.bucket}"
   content      = "${file("./error.html")}"
