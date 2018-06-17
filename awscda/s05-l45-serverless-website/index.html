@@ -1,39 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<script>
-
-    function myFunction() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("my-demo").innerHTML = this.responseText;
-            }
-        };
-            xhttp.open("GET", "${invocation_url}", true);
-        xhttp.send();
-    }
-
-</script>
-
 <head>
     <meta charset="utf-8">
+
+    <script>
+
+        function myFunction() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("my-demo").innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", "${invocation_url}", true);
+            xhttp.send();
+        }
+
+    </script>
 
     <title>Lambda Serverless Website</title>
 </head>
 
 <body>
-    <div align="center">
-        <br>
-        <br>
-        <br>
-        <br>
+    <div style="text-align:center">
         <h1>Hello
-            <span id="my-demo">Cloud Gurus!</span>
+            <span id="my-demo">Cloud Gurus</span>!
         </h1>
         <button onclick="myFunction()">Click me</button>
         <br>
-        <img src="https://s3.amazonaws.com/acloudguru-opsworkslab-donotdelete/ACG_Austin.JPG">
+        <img alt="Cloud Gurus" src="https://s3.amazonaws.com/acloudguru-opsworkslab-donotdelete/ACG_Austin.JPG" style="height: auto; max-width: 100%; width: auto;">
     </div>
 </body>
 
