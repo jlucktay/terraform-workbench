@@ -10,7 +10,7 @@
                 document.getElementById("my-demo").innerHTML = this.responseText;
             }
         };
-        xhttp.open("GET", "YOUR-API-GATEWAY-LINK-HERE", true);
+            xhttp.open("GET", "${invocation_url}", true);
         xhttp.send();
     }
 
