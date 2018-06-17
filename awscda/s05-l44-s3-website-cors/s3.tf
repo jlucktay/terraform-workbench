@@ -31,6 +31,6 @@ resource "aws_s3_bucket" "website-cors" {
   }"
 
   website {
-    index_document = ""
+    index_document = "loadpage.html"
   }
 }

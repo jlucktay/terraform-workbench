@@ -25,3 +25,17 @@ resource "aws_s3_bucket_object" "website-error" {
     )
   }"
 }
+
+resource "aws_s3_bucket_object" "cors-page" {
+  acl          = "public-read"
+  bucket       = "${aws_s3_bucket.website-cors.bucket}"
+  content_type = "text/html"
+  key          = "${aws_s3_bucket.website-cors.website.0.index_document}"
+  source       = "./loadpage.html"
+
+  tags = "${
+    merge(
+      local.default-tags,
+    )
+  }"
+}
