@@ -5,7 +5,7 @@ resource "aws_instance" "teleport-target" {
   instance_type               = "t2.micro"
   key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
   subnet_id                   = "${element(data.aws_subnet_ids.public.ids, count.index)}"
-  user_data                   = "${data.template_file.user-data.rendered}"
+  user_data                   = "${data.template_file.teleport-target-user-data.rendered}"
 
   tags = "${
     merge(
@@ -29,6 +29,6 @@ resource "aws_instance" "teleport-target" {
   }
 }
 
-data "template_file" "user-data" {
+data "template_file" "teleport-target-user-data" {
   template = "${file("${path.module}/ec2.teleport-target.user-data.sh")}"
 }
