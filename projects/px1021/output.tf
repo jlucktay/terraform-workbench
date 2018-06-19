@@ -1,3 +1,3 @@
-output "awscda-efs-ip" {
-  value = "${aws_instance.teleport.public_ip}"
+output "teleport-proxy-ip" {
+  value = "${aws_instance.teleport-proxy.public_ip}"
 }

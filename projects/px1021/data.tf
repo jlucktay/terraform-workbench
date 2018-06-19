@@ -25,7 +25,7 @@ data "aws_security_group" "default" {
   }
 }
 
-data "aws_subnet_ids" "main" {
+data "aws_subnet_ids" "public" {
   vpc_id = "${data.aws_vpc.main.id}"
 
   tags {
