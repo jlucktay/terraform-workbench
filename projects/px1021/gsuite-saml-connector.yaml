@@ -1,0 +1,11 @@
+kind: saml
+version: v2
+metadata:
+  name: GSuiteSAML
+spec:
+  display: "G-Suite SSO - jimmy.gr (SAML)"
+  acs: https://34.254.99.19:3080/v1/webapi/saml/acs
+  attributes_to_roles: # TODO: tweak these
+    - {name: "groups", value: "teleport.admin", roles: ["jimmy-admin"]}
+    - {name: "groups", value: "teleport.user", roles: ["jimmy-dev"]}
+  entity_descriptor: |
