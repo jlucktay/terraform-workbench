@@ -16,9 +16,8 @@ cd teleport
 ./install
 
 # Put Teleport config in place
-curl https://gist.githubusercontent.com/jlucktay/9c71eb7e64637337e74973534fe74d31/raw/teleport.yaml >> /etc/teleport.yaml
+curl https://gist.githubusercontent.com/jlucktay/9c71eb7e64637337e74973534fe74d31/raw/teleport.yaml > /etc/teleport.yaml
 
 # Start Teleport
-TeleportLogDir="/var/log/teleport"
-mkdir -pv "$TeleportLogDir"
-nohup /usr/local/bin/teleport start >"$TeleportLogDir"/stdout.log 2>"$TeleportLogDir"/stderr.log &
+mkdir -pv /var/log/teleport
+nohup /usr/local/bin/teleport start --roles=auth,proxy >>/var/log/teleport/stdout.log 2>>/var/log/teleport/stderr.log &

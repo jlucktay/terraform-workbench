@@ -1,0 +1,14 @@
+kind: "role"
+version: "v3"
+metadata:
+  name: "jimmy-admin"
+spec:
+  options:
+    max_session_ttl: "24h"
+  allow:
+    logins: [root]
+    node_labels:
+      "*": "*"
+    rules:
+      - resources: ["*"]
+        verbs: ["*"]

@@ -1,0 +1,11 @@
+kind: "role"
+version: "v3"
+metadata:
+  name: "jimmy-dev"
+spec:
+  options:
+    max_session_ttl: "24h"
+  allow:
+    logins: [ec2-user]
+    node_labels:
+      access: relaxed

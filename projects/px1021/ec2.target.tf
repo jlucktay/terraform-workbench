@@ -1,6 +1,6 @@
 resource "aws_instance" "teleport-target" {
   ami                         = "${data.aws_ami.amazon-linux-latest.image_id}"
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   count                       = 1
   instance_type               = "t2.micro"
   key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
@@ -19,6 +19,7 @@ resource "aws_instance" "teleport-target" {
 
   vpc_security_group_ids = [
     "${data.aws_security_group.default.id}",
+    "${data.aws_security_group.dmz.id}",
   ]
 
   lifecycle {
