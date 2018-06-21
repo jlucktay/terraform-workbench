@@ -1,7 +1,7 @@
 kind: "role"
 version: "v3"
 metadata:
-  name: "Teleport - Admin"
+  name: "Teleport-Admin"
 spec:
   options:
     max_session_ttl: "24h"
