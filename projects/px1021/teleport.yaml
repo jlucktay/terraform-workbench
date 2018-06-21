@@ -1,16 +1,9 @@
-# https://gravitational.com/blog/how-to-record-ssh-sessions/
-
 auth_service:
-   # IMPORTANT: this line enables the proxy recording mode:
-   session_recording: "proxy"  # can also be "off" and "on" (default)
-
-   # For better security it’s recommended to enable host checking as well,
-   # this is when the Teleport proxy will verify the identity of the
-   # nodes. Teleport documentation covers how to issue host certificates,
-   # but for simplicity of this tutorial we are disabling strict host
-   # checking here
-   proxy_checks_host_keys: no
-
-   # turn 2FA off to make the tutorial easier to follow
-   authentication:
-      second_factor: off
+  authentication:
+    type: saml
+  enabled: "yes"
+  license_file: /var/lib/teleport/license.pem
+proxy_service:
+  enabled: "yes"
+ssh_service:
+  enabled: "no"

@@ -3,9 +3,9 @@ version: v2
 metadata:
   name: GSuiteSAML
 spec:
-  display: "G-Suite SSO - jimmy.gr (SAML)"
-  acs: https://34.254.99.19:3080/v1/webapi/saml/acs
-  attributes_to_roles: # TODO: tweak these
-    - {name: "groups", value: "teleport.admin", roles: ["jimmy-admin"]}
-    - {name: "groups", value: "teleport.user", roles: ["jimmy-dev"]}
+  display: "G-Suite SSO via jimmy.gr"
+  acs: https://34.254.121.240:3080/v1/webapi/saml/acs
+  attributes_to_roles:
+    - {name: "groups", value: "jimmy.gr - Admin", roles: ["Teleport - Admin"]}
+    - {name: "groups", value: "jimmy.gr - Dev", roles: ["Teleport - Dev"]}
   entity_descriptor: |
