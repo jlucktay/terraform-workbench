@@ -1,6 +1,3 @@
-# Following a pattern from here:
-# https://serialseb.com/blog/2016/05/11/terraform-working-around-no-count-on-module/
-
 module "tidal-auth-jump" {
   source = "modules/iam"
 
@@ -9,7 +6,7 @@ module "tidal-auth-jump" {
 }
 
 variable "tidal-auth-jump" {
-  description = "IAM roles in the 'tidal-auth' account to jump into from SSO"
+  description = "IAM roles in the 'tidal-auth' account to jump into"
 
   default = [
     "fd-billing-admin",
