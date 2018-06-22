@@ -10,3 +10,6 @@ plan.*.out
 
 # Visual Studio Code
 /.vscode/
+
+# Secrets
+/projects/px1021/GoogleIDP*
