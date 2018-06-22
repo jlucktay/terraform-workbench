@@ -10,6 +10,6 @@ terraform {
 }
 
 provider "aws" {
-  allowed_account_ids = ["580501780015"] # Cloudreach sandbox
+  allowed_account_ids = ["580501780015"] # Cloudreach sandbox # TODO: update this; maybe split providers by account?
   region              = "${var.region}"
 }
