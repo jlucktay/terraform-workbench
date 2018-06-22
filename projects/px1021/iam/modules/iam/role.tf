@@ -4,7 +4,8 @@ resource "aws_iam_role" "this" {
   name               = "${element(null_resource.roles.*.triggers.name, count.index)}"
 }
 
-# resource "aws_iam_role_policy_attachment" "s3" {
+### Will need something like this later, once we figure out which policies to attach to what
+# resource "aws_iam_role_policy_attachment" "something" {
 #   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-#   role       = "${aws_iam_role.main.name}"
+#   role       = "${aws_iam_role.this.name}"
 # }

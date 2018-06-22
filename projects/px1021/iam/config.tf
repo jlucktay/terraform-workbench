@@ -11,7 +11,7 @@ terraform {
 
 provider "aws" {
   alias               = "cloudreach-celab"
-  allowed_account_ids = ["580501780015"]   # Cloudreach sandbox
+  allowed_account_ids = ["580501780015"]   # Cloudreach sandbox account
   region              = "${var.region}"
 }
 
