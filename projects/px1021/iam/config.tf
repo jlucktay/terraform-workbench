@@ -10,6 +10,55 @@ terraform {
 }
 
 provider "aws" {
-  allowed_account_ids = ["580501780015"] # Cloudreach sandbox # TODO: update this; maybe split providers by account?
+  alias               = "cloudreach-celab"
+  allowed_account_ids = ["580501780015"]   # Cloudreach sandbox
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-auth"
+  allowed_account_ids = ["111867032258"]
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-billing"
+  allowed_account_ids = ["757202111367"]
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-bo"
+  allowed_account_ids = ["498346215557"]
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-dev"
+  allowed_account_ids = [""]            # New account that doesn't exist yet?
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-prod-ba"
+  allowed_account_ids = ["502656652708"] # Same as below; which is which?
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-prod-play"
+  allowed_account_ids = ["502656652708"]  # Same as above; which is which?
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-stg-ba"
+  allowed_account_ids = ["692930846239"] # Same as below; which is which?
+  region              = "${var.region}"
+}
+
+provider "aws" {
+  alias               = "tidal-stg-play"
+  allowed_account_ids = ["692930846239"] # Same as above; which is which?
   region              = "${var.region}"
 }
