@@ -14,20 +14,22 @@ resource "aws_security_group" "teleport-proxy" {
   }"
 }
 
-resource "aws_security_group_rule" "teleport-allow-services-from-everywhere-ipv4" {
+resource "aws_security_group_rule" "teleport-allow-services-from-everywhere" {
   cidr_blocks       = ["0.0.0.0/0"]
-  description       = "Teleport - SSH proxy, Reverse tunnel, Auth - 3023-3025 from everywhere - IPv4"
+  description       = "Teleport - SSH proxy, Reverse tunnel, Auth - 3023-3025 from everywhere"
   from_port         = 3023
+  ipv6_cidr_blocks  = ["::/0"]
   protocol          = "tcp"
   security_group_id = "${aws_security_group.teleport-proxy.id}"
   to_port           = 3025
   type              = "ingress"
 }
 
-resource "aws_security_group_rule" "teleport-allow-proxy-from-everywhere-ipv4" {
+resource "aws_security_group_rule" "teleport-allow-proxy-from-everywhere" {
   cidr_blocks       = ["0.0.0.0/0"]
-  description       = "Teleport - Web proxy service - 3080 from everywhere - IPv4"
+  description       = "Teleport - Web proxy service - 3080 from everywhere"
   from_port         = 3080
+  ipv6_cidr_blocks  = ["::/0"]
   protocol          = "tcp"
   security_group_id = "${aws_security_group.teleport-proxy.id}"
   to_port           = 3080
