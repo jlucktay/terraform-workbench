@@ -1,11 +1,10 @@
 resource "aws_instance" "teleport-proxy" {
-  ami                         = "${data.aws_ami.amazon-linux-latest.image_id}"
-  associate_public_ip_address = true
-  count                       = 1
-  instance_type               = "t2.micro"
-  key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
-  subnet_id                   = "${element(data.aws_subnet_ids.public.ids, count.index)}"
-  user_data                   = "${data.template_file.teleport-proxy-user-data.rendered}"
+  ami           = "${data.aws_ami.amazon-linux-latest.image_id}"
+  count         = 1
+  instance_type = "t2.micro"
+  key_name      = "james.lucktaylor.${data.aws_region.current.name}"
+  subnet_id     = "${element(data.aws_subnet_ids.public.ids, count.index)}"
+  user_data     = "${data.template_file.teleport-proxy-user-data.rendered}"
 
   tags = "${
     merge(
