@@ -12,7 +12,8 @@ resource "aws_instance" "teleport-target" {
       local.default-tags,
       map(
         "Name", "james.lucktaylor.teleport-target.${count.index}",
-        "StopDaily", "Yes",
+        "Purpose", "Client PoC/demo",
+        "StopDaily", "No",
       )
     )
   }"
@@ -26,6 +27,7 @@ resource "aws_instance" "teleport-target" {
     ignore_changes = [
       "tags.%",
       "tags.Created",
+      "user_data",
     ]
   }
 }

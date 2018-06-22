@@ -11,7 +11,8 @@ resource "aws_instance" "teleport-proxy" {
       local.default-tags,
       map(
         "Name", "james.lucktaylor.teleport-proxy.${count.index}",
-        "StopDaily", "Yes",
+        "Purpose", "Client PoC/demo",
+        "StopDaily", "No",
       )
     )
   }"
@@ -26,6 +27,7 @@ resource "aws_instance" "teleport-proxy" {
     ignore_changes = [
       "tags.%",
       "tags.Created",
+      "user_data",
     ]
   }
 }
