@@ -20,7 +20,6 @@ resource "aws_instance" "teleport-target" {
 
   vpc_security_group_ids = [
     "${data.aws_security_group.default.id}",
-    "${data.aws_security_group.dmz.id}",
   ]
 
   lifecycle {
