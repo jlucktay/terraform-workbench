@@ -6,7 +6,7 @@ terraform {
     bucket         = "james-lucktaylor-terraform"
     dynamodb_table = "james.lucktaylor.terraform"
     encrypt        = true
-    key            = "projects/px1021/iam/terraform.tfstate"
+    key            = "projects/px1021/iam/terraform.tfstate" # TODO: remove this 'key', as it is derived dynamically by my init script
   }
 }
 
