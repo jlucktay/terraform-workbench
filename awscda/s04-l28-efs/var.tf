@@ -1,3 +1,3 @@
 variable "region" {
-  description = "Which AWS region to operate in? Defaults to blank, so that prompts/errors will occur"
+  description = "Which AWS region to operate in?  No default is set, so that prompts will occur"
 }
