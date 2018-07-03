@@ -13,3 +13,6 @@ plan.*.out
 
 # Secrets
 /projects/px1021/GoogleIDP*
+
+# Binaries
+*.zip
