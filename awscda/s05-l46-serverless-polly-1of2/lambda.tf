@@ -9,7 +9,7 @@ resource "aws_lambda_function" "polly_newposts" {
   tags = "${merge(
     local.default-tags,
     map(
-      "Description", "james.lucktaylor - AWS CDA course on Udemy - section 5, lab 46 - Polly - This function creates posts in DynamoDB",
+      "Description", "james.lucktaylor - AWS CDA course on Udemy - section 5 lab 46 - Polly - This function creates posts in DynamoDB",
       "Name", "james-lucktaylor-awscda-postreader-newposts",
     )
   )}"
