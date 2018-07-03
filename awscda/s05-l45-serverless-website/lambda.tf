@@ -6,15 +6,13 @@ resource "aws_lambda_function" "serverless" {
   runtime          = "python3.6"
   source_code_hash = "${data.archive_file.serverless.output_base64sha256}"
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Description", "james.lucktaylor - Serverless website with the power of the cloud",
-        "Name", "james-lucktaylor-awscda-serverless-website",
-      )
+  tags = "${merge(
+    local.default-tags,
+    map(
+      "Description", "james.lucktaylor - Serverless website with the power of the cloud",
+      "Name", "james-lucktaylor-awscda-serverless-website",
     )
-  }"
+  )}"
 }
 
 data "archive_file" "serverless" {
