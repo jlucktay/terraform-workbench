@@ -1,3 +1,5 @@
+### Implementing the OPTIONS method this way enables CORS
+
 resource "aws_api_gateway_method" "polly_options" {
   authorization = "NONE"
   http_method   = "OPTIONS"
