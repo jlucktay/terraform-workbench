@@ -5,10 +5,8 @@ variable "role-delimiter" {
 
 variable "role-names" {
   description = "The name(s) of the IAM role, delimited with 'var.role-names'"
-
 }
 
 variable "role-type" {
   description = "The type of the IAM role; valid inputs are 'sso' and 'jump'"
-
 }
