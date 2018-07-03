@@ -1,0 +1,25 @@
+{
+    "Statement": [
+        {
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "polly:SynthesizeSpeech",
+                "s3:GetBucketLocation",
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "sns:Publish"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "*"
+            ]
+        }
+    ],
+    "Version": "2012-10-17"
+}
