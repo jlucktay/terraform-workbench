@@ -13,13 +13,13 @@ resource "aws_api_gateway_resource" "polly" {
   rest_api_id = "${aws_api_gateway_rest_api.polly.id}"
 }
 
-/*
-resource "aws_api_gateway_deployment" "serverless" {
-  rest_api_id = "${aws_api_gateway_rest_api.serverless.id}"
+resource "aws_api_gateway_deployment" "polly" {
+  rest_api_id = "${aws_api_gateway_rest_api.polly.id}"
   stage_name  = "prod"
 
   depends_on = [
-    "aws_api_gateway_integration.serverless",
+    "aws_api_gateway_integration.polly_get",
+    "aws_api_gateway_integration.polly_options",
+    "aws_api_gateway_integration.polly_post",
   ]
 }
-*/

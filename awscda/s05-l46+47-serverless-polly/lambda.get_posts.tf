@@ -28,11 +28,9 @@ data "archive_file" "polly_get_posts" {
   type        = "zip"
 }
 
-/*
 resource "aws_lambda_permission" "get_posts" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.polly_convert_to_audio.function_name}"
+  function_name = "${aws_lambda_function.polly_get_posts.function_name}"
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_sns_topic.new_posts.arn}"
+  source_arn    = "${aws_api_gateway_rest_api.polly.execution_arn}/*/${aws_api_gateway_method.polly_get.http_method}/${aws_api_gateway_resource.polly.path_part}"
 }
-*/
