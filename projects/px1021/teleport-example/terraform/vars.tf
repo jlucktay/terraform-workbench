@@ -81,11 +81,6 @@ variable license_path {
   type = "string"
 }
 
-// AMI name to use
-variable ami_name {
- type = "string"
-}
-
 // DynamoDB autoscale parameters
 variable "autoscale_write_target" {
   type = "string"
