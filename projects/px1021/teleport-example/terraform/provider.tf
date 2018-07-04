@@ -1,5 +1,12 @@
 terraform {
   required_version = "~> 0.11.7"
+
+  backend "s3" {
+    acl            = "private"
+    bucket         = "james-lucktaylor-terraform"
+    dynamodb_table = "james.lucktaylor.terraform"
+    encrypt        = true
+  }
 }
 
 provider "random" {
@@ -15,6 +22,6 @@ variable "aws_max_retries" {
 }
 
 provider "aws" {
-  version                 = "~> 1.18.0"
-  region     = "${var.region}"
+  version = "~> 1.18.0"
+  region  = "${var.region}"
 }
