@@ -2,11 +2,36 @@
 // the only requirement is systemd installed as all scripts
 // are relying on systemd
 data "aws_ami" "base" {
-  most_recent      = true
+  most_recent = true
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "image-type"
+    values = ["machine"]
+  }
 
   filter {
     name   = "name"
-    values = ["${var.ami_name}"]
+    values = ["debian-*-gp2-*"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
