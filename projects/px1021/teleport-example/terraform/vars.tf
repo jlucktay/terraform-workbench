@@ -5,7 +5,7 @@ variable "region" {
 
 // Script creates a separate VPC with demo deployment
 variable "vpc_cidr" {
-  type = "string"
+  type    = "string"
   default = "172.31.0.0/16"
 }
 
@@ -21,25 +21,25 @@ variable "teleport_version" {
 
 // Teleport UID is a UID for teleport user provisioned on the hosts
 variable "teleport_uid" {
-  type = "string"
+  type    = "string"
   default = "1007"
 }
 
 // Instance types used for authentication servers auto scale groups
 variable "auth_instance_type" {
-  type = "string"
+  type    = "string"
   default = "m4.large"
 }
 
 // Instance types used for proxy auto scale groups
 variable "proxy_instance_type" {
-  type = "string"
+  type    = "string"
   default = "m4.large"
 }
 
 // Instance types used for teleport nodes auto scale groups
 variable "node_instance_type" {
-  type = "string"
+  type    = "string"
   default = "t2.medium"
 }
 
@@ -83,54 +83,54 @@ variable license_path {
 
 // DynamoDB autoscale parameters
 variable "autoscale_write_target" {
-  type = "string"
+  type    = "string"
   default = 50
 }
 
 variable "autoscale_read_target" {
-  type = "string"
+  type    = "string"
   default = 50
 }
 
 variable "autoscale_min_read_capacity" {
-  type = "string"
+  type    = "string"
   default = 5
 }
 
 variable "autoscale_max_read_capacity" {
-  type = "string"
+  type    = "string"
   default = 100
 }
 
 variable "autoscale_min_write_capacity" {
-  type = "string"
+  type    = "string"
   default = 5
 }
 
 variable "autoscale_max_write_capacity" {
-  type = "string"
+  type    = "string"
   default = 100
 }
 
 // InfluxDB and Telegraf versions
 variable "influxdb_version" {
-   type = "string"
-   default = "1.4.2"
+  type    = "string"
+  default = "1.4.2"
 }
 
 variable "telegraf_version" {
-   type = "string"
-   default = "1.5.1-1"
+  type    = "string"
+  default = "1.5.1-1"
 }
 
 variable "grafana_version" {
-   type = "string"
-   default = "4.6.3"
+  type    = "string"
+  default = "4.6.3"
 }
 
 // Instance types used for proxy auto scale groups
 variable "monitor_instance_type" {
-  type = "string"
+  type    = "string"
   default = "m4.large"
 }
 
