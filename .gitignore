@@ -16,3 +16,6 @@ plan.*.out
 
 # Binaries
 *.zip
+
+# WIP
+/awscda/s05-l46+47-serverless-polly/pollyassets/
