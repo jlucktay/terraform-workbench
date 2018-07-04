@@ -9,7 +9,7 @@ fi
 echo -n "Exporting Tidal Teleport demo variables for Terraform... "
 
 export TF_VAR_region="eu-west-1"
-export TF_VAR_cluster_name="James.L.Tidal.Teleport.Demo"
+export TF_VAR_cluster_name="James-L-Tidal"
 export TF_VAR_teleport_version="2.6.6"
 export TF_VAR_key_name="james.lucktaylor.${TF_VAR_region}"
 export TF_VAR_license_path="/Users/jameslucktaylor/git/bitbucket.org/cloudreach/james-lucktaylor-terraform/projects/px1021/teleport-example/terraform/license.pem"
