@@ -2,24 +2,19 @@
 
 ## Terraform provisioning example
 
-Terraform specifies example provisioning script
-for Teleport auth, proxy and nodes in HA mode.
+Terraform specific example provisioning scripts for Teleport auth, proxy and nodes in HA mode.
 
-Use these examples as possible deployment patterns suggested
-by Teleport developers.
+Use these examples as possible deployment patterns suggested by Teleport developers.
 
 Scripts set up letsencrypt certificates using DNS-01 challenge.
+
 This means users have to control DNS zone via route53.
 
-Teleport join tokens are distributed using SSM parameter store,
-and certificates are distributed using encrypted S3 bucket.
+Teleport join tokens are distributed using SSM parameter store, and certificates are distributed using encrypted S3 bucket.
 
-There are a couple of tricks using DynamoDB locking to make sure
-there is only one auth server node rotating join token at a time,
-but those could be easilly replaced and are not critical for performance.
+There are a couple of tricks using DynamoDB locking to make sure there is only one auth server node rotating join token at a time, but those could be easilly replaced and are not critical for performance.
 
-Important bits are that auth servers and proxes are not running as root
-and are secured exposing absolute minimum of the ports to the other parts.
+Important bits are that auth servers and proxies are not running as root and are secured, exposing an absolute minimum of ports to the other parts.
 
 ```bash
 # Set variables for Terraform
