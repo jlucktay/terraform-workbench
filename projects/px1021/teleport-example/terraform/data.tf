@@ -40,9 +40,7 @@ data "aws_caller_identity" "current" {}
 
 // Use current region of the credentials in some parts of the script,
 // could be as well hardcoded.
-data "aws_region" "current" {
-  current = true
-}
+data "aws_region" "current" {}
 
 data "aws_availability_zones" "available" {}
 
