@@ -10,7 +10,17 @@ resource "aws_autoscaling_group" "monitor" {
   max_size                  = 1
   min_size                  = 1
   name                      = "${var.cluster_name}-monitor"
-  tags                      = "${local.default_tags_asg}"
+
+  tags = ["${concat(
+    list(
+      map(
+        "key", "TeleportRole",
+        "propagate_at_launch", true,
+        "value", "monitor"
+      ),
+    ),
+    local.default_tags_asg
+  )}"]
 
   vpc_zone_identifier = [
     "${aws_subnet.public.0.id}",

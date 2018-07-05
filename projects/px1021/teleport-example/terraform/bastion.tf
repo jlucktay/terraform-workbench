@@ -1,6 +1,4 @@
-// Bastion is an emergency access bastion
-// that could be spinned up on demand in case if
-// of need to have emrergency administrative access
+// Bastion is an emergency access bastion that could be spun up on demand in case of need to have emergency administrative access
 resource "aws_instance" "bastion" {
   ami                         = "${data.aws_ami.base.id}"
   associate_public_ip_address = true
@@ -13,7 +11,8 @@ resource "aws_instance" "bastion" {
   tags = "${merge(
     local.default_tags,
     map(
-      "Name", "james.lucktaylor.tidal",
+      "Name", "james.lucktaylor.teleport.bastion",
+      "StopDaily", "No",
       "TeleportRole", "bastion",
     )
   )}"

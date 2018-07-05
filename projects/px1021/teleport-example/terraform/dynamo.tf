@@ -159,6 +159,12 @@ resource "aws_appautoscaling_target" "read_target" {
   role_arn           = "${aws_iam_role.autoscaler.arn}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
+
+  lifecycle {
+    ignore_changes = [
+      "role_arn"
+    ]
+  }
 }
 
 resource "aws_appautoscaling_policy" "read_policy" {
@@ -184,6 +190,12 @@ resource "aws_appautoscaling_target" "write_target" {
   role_arn           = "${aws_iam_role.autoscaler.arn}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
+
+  lifecycle {
+    ignore_changes = [
+      "role_arn"
+    ]
+  }
 }
 
 resource "aws_appautoscaling_policy" "write_policy" {
