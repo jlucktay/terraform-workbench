@@ -1,19 +1,11 @@
-// Dynamodb is used as a backend for auth servers,
-// and only auth servers need access to the tables
-// all other components are stateless.
+// Dynamodb is used as a backend for auth servers, and only auth servers need access to the tables all other components are stateless.
 resource "aws_dynamodb_table" "teleport" {
+  hash_key       = "HashKey"
   name           = "${var.cluster_name}"
+  range_key      = "FullPath"
   read_capacity  = 20
+  tags           = "${local.default_tags}"
   write_capacity = 20
-  hash_key        = "HashKey"
-  range_key       = "FullPath"
-  server_side_encryption {
-    enabled = true
-  }
-
-  lifecycle {
-    ignore_changes = ["read_capacity", "write_capacity"]
-  }
 
   attribute {
     name = "HashKey"
@@ -25,40 +17,31 @@ resource "aws_dynamodb_table" "teleport" {
     type = "S"
   }
 
-  ttl {
-     attribute_name = "Expires"
-     enabled = true
+  lifecycle {
+    ignore_changes = [
+      "read_capacity",
+      "write_capacity",
+    ]
   }
-
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }
-}
-
-// Dynamodb events table stores events
-resource "aws_dynamodb_table" "teleport_events" {
-  name           = "${var.cluster_name}-events"
-  read_capacity  = 20
-  write_capacity = 20
-  hash_key        = "SessionID"
-  range_key       = "EventIndex"
 
   server_side_encryption {
     enabled = true
   }
 
-  global_secondary_index {
-    name               = "timesearch"
-    hash_key           = "EventNamespace"
-    range_key          = "CreatedAt"
-    write_capacity     = 20
-    read_capacity      = 20
-    projection_type    = "ALL"
+  ttl {
+    attribute_name = "Expires"
+    enabled        = true
   }
+}
 
-  lifecycle {
-    ignore_changes = ["read_capacity", "write_capacity"]
-  }
+// Dynamodb events table stores events
+resource "aws_dynamodb_table" "teleport_events" {
+  hash_key       = "SessionID"
+  name           = "${var.cluster_name}-events"
+  range_key      = "EventIndex"
+  read_capacity  = 20
+  tags           = "${local.default_tags}"
+  write_capacity = 20
 
   attribute {
     name = "SessionID"
@@ -80,31 +63,48 @@ resource "aws_dynamodb_table" "teleport_events" {
     type = "N"
   }
 
-  ttl {
-     attribute_name = "Expires"
-     enabled = true
+  global_secondary_index {
+    hash_key        = "EventNamespace"
+    name            = "timesearch"
+    projection_type = "ALL"
+    range_key       = "CreatedAt"
+    read_capacity   = 20
+    write_capacity  = 20
   }
 
-  tags {
-    TeleportCluster = "${var.cluster_name}"
+  lifecycle {
+    ignore_changes = [
+      "read_capacity",
+      "write_capacity",
+    ]
+  }
+
+  server_side_encryption {
+    enabled = true
+  }
+
+  ttl {
+    attribute_name = "Expires"
+    enabled        = true
   }
 }
 
-// Autoscaler scales up/down the provisioned ops for
-// DynamoDB table based on the load.
+// Autoscaler scales up/down the provisioned ops for DynamoDB table based on the load.
 resource "aws_iam_role" "autoscaler" {
   name = "${var.cluster_name}-autoscaler"
 
   assume_role_policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {"Service": "application-autoscaling.amazonaws.com"},
-            "Action": "sts:AssumeRole"
-        }
-    ]
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "application-autoscaling.amazonaws.com"
+      }
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }
@@ -115,17 +115,17 @@ resource "aws_iam_role_policy" "autoscaler_dynamo" {
 
   policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:DescribeTable",
-                "dynamodb:UpdateTable"
-            ],
-            "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.cluster_name}"
-        }
-    ]
+  "Statement": [
+    {
+      "Action": [
+        "dynamodb:DescribeTable",
+        "dynamodb:UpdateTable"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${var.cluster_name}"
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }
@@ -136,22 +136,21 @@ resource "aws_iam_role_policy" "autoscaler_cloudwatch" {
 
   policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "cloudwatch:PutMetricAlarm",
-                "cloudwatch:DescribeAlarms",
-                "cloudwatch:DeleteAlarms"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Statement": [
+    {
+      "Action": [
+        "cloudwatch:PutMetricAlarm",
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:DeleteAlarms"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }
-
 
 resource "aws_appautoscaling_target" "read_target" {
   max_capacity       = "${var.autoscale_max_read_capacity}"
@@ -170,11 +169,11 @@ resource "aws_appautoscaling_policy" "read_policy" {
   service_namespace  = "${aws_appautoscaling_target.read_target.service_namespace}"
 
   target_tracking_scaling_policy_configuration {
+    target_value = "${var.autoscale_read_target}"
+
     predefined_metric_specification {
       predefined_metric_type = "DynamoDBReadCapacityUtilization"
     }
-
-    target_value = "${var.autoscale_read_target}"
   }
 }
 
@@ -187,7 +186,6 @@ resource "aws_appautoscaling_target" "write_target" {
   service_namespace  = "dynamodb"
 }
 
-
 resource "aws_appautoscaling_policy" "write_policy" {
   name               = "DynamoDBWriteCapacityUtilization:${aws_appautoscaling_target.write_target.resource_id}"
   policy_type        = "TargetTrackingScaling"
@@ -196,11 +194,10 @@ resource "aws_appautoscaling_policy" "write_policy" {
   service_namespace  = "${aws_appautoscaling_target.write_target.service_namespace}"
 
   target_tracking_scaling_policy_configuration {
+    target_value = "${var.autoscale_write_target}"
+
     predefined_metric_specification {
       predefined_metric_type = "DynamoDBWriteCapacityUtilization"
     }
-
-    target_value = "${var.autoscale_write_target}"
   }
 }
-

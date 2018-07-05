@@ -1,43 +1,48 @@
 // VPC for Teleport deployment
 resource "aws_vpc" "teleport" {
-  cidr_block            = "${var.vpc_cidr}"
-  enable_dns_support    = true
-  enable_dns_hostnames  = true
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }
+  cidr_block           = "${var.vpc_cidr}"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = "${merge(
+    local.default_tags,
+    map(
+      "Name", "james.lucktaylor.tidal",
+    )
+  )}"
 }
 
 // Elastic IP for NAT gateways
 resource "aws_eip" "nat" {
   count = "${length(local.azs)}"
+  tags  = "${local.default_tags}"
   vpc   = true
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }  
 }
 
 // Internet gateway for NAT gateway
 resource "aws_internet_gateway" "teleport" {
+  tags   = "${local.default_tags}"
   vpc_id = "${aws_vpc.teleport.id}"
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }
 }
 
 // Creates nat gateway per availability zone
 resource "aws_nat_gateway" "teleport" {
-  count         = "${length(local.azs)}"
   allocation_id = "${element(aws_eip.nat.*.id, count.index)}"
+  count         = "${length(local.azs)}"
   subnet_id     = "${element(aws_subnet.public.*.id, count.index)}"
-  depends_on    = ["aws_subnet.public", "aws_internet_gateway.teleport"]
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }  
+  tags          = "${local.default_tags}"
+
+  depends_on = [
+    "aws_internet_gateway.teleport",
+    "aws_subnet.public",
+  ]
 }
 
 locals {
-  vpc_id = "${aws_vpc.teleport.id}"
   internet_gateway_id = "${aws_internet_gateway.teleport.id}"
-  nat_gateways = ["${aws_nat_gateway.teleport.*.id}"]
+  vpc_id              = "${aws_vpc.teleport.id}"
+
+  nat_gateways = [
+    "${aws_nat_gateway.teleport.*.id}",
+  ]
 }

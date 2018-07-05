@@ -4,24 +4,28 @@ resource "aws_iam_role" "auth" {
 
   assume_role_policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {"Service": "ec2.amazonaws.com"},
-            "Action": "sts:AssumeRole"
-        }
-    ]
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      }
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }
 
-// Auth servers publish various secrets to SSM parameter store
-// for example join tokens, so other nodes and proxies can join the cluster.
+// Auth servers publish various secrets to SSM parameter store for example join tokens, so other nodes and proxies can join the cluster.
 resource "aws_iam_instance_profile" "auth" {
-  name       = "${var.cluster_name}-auth"
-  role       = "${aws_iam_role.auth.name}"
-  depends_on = ["aws_iam_role_policy.auth_ssm"]
+  name = "${var.cluster_name}-auth"
+  role = "${aws_iam_role.auth.name}"
+
+  depends_on = [
+    "aws_iam_role_policy.auth_ssm",
+  ]
 }
 
 resource "aws_iam_role_policy" "auth_ssm" {
@@ -30,30 +34,30 @@ resource "aws_iam_role_policy" "auth_ssm" {
 
   policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ssm:DescribeParameters",
-                "ssm:GetParameters",
-                "ssm:GetParametersByPath",
-                "ssm:GetParameter",
-                "ssm:PutParameter",
-                "ssm:DeleteParameter"
-            ],
-            "Resource": "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/teleport/${var.cluster_name}/*"
-        },
-        {
-         "Effect":"Allow",
-         "Action":[
-            "kms:Decrypt"
-         ],
-         "Resource":[
-            "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/${data.aws_kms_alias.ssm.target_key_id}"
-         ]
-      }
-    ]
+  "Statement": [
+    {
+      "Action": [
+        "ssm:DescribeParameters",
+        "ssm:GetParameters",
+        "ssm:GetParametersByPath",
+        "ssm:GetParameter",
+        "ssm:PutParameter",
+        "ssm:DeleteParameter"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/teleport/${var.cluster_name}/*"
+    },
+    {
+      "Action": [
+        "kms:Decrypt"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/${data.aws_kms_alias.ssm.target_key_id}"
+      ]
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }
@@ -65,27 +69,27 @@ resource "aws_iam_role_policy" "auth_dynamo" {
 
   policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllActionsOnTeleportDB",
-            "Effect": "Allow",
-            "Action": "dynamodb:*",
-            "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.teleport.name}"
-        },
-        {
-            "Sid": "AllActionsOnTeleportEventsDB",
-            "Effect": "Allow",
-            "Action": "dynamodb:*",
-            "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.teleport_events.name}"
-        },
-        {
-            "Sid": "AllActionsOnTeleportEventsIndexDB",
-            "Effect": "Allow",
-            "Action": "dynamodb:*",
-            "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.teleport_events.name}/index/*"
-        }
-    ]
+  "Statement": [
+    {
+      "Action": "dynamodb:*",
+      "Effect": "Allow",
+      "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.teleport.name}",
+      "Sid": "AllActionsOnTeleportDB"
+    },
+    {
+      "Action": "dynamodb:*",
+      "Effect": "Allow",
+      "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.teleport_events.name}",
+      "Sid": "AllActionsOnTeleportEventsDB"
+    },
+    {
+      "Action": "dynamodb:*",
+      "Effect": "Allow",
+      "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.teleport_events.name}/index/*",
+      "Sid": "AllActionsOnTeleportEventsIndexDB"
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }
@@ -97,15 +101,15 @@ resource "aws_iam_role_policy" "auth_locks" {
 
   policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllActionsOnLocks",
-            "Effect": "Allow",
-            "Action": "dynamodb:*",
-            "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.locks.name}"
-        }
-    ]
+  "Statement": [
+    {
+      "Action": "dynamodb:*",
+      "Effect": "Allow",
+      "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.locks.name}",
+      "Sid": "AllActionsOnLocks"
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }
@@ -119,24 +123,30 @@ resource "aws_iam_role_policy" "auth_s3" {
 
   policy = <<EOF
 {
-   "Version": "2012-10-17",
-   "Statement": [
-     {
-       "Effect": "Allow",
-       "Action": ["s3:ListBucket"],
-       "Resource": ["arn:aws:s3:::${aws_s3_bucket.certs.bucket}"]
-     },
-     {
-       "Effect": "Allow",
-       "Action": [
-         "s3:PutObject",
-         "s3:GetObject"
-       ],
-       "Resource": ["arn:aws:s3:::${aws_s3_bucket.certs.bucket}/*"]
-     }
-   ]
- }
- EOF
+  "Statement": [
+    {
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::${aws_s3_bucket.certs.bucket}"
+      ]
+    },
+    {
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::${aws_s3_bucket.certs.bucket}/*"
+      ]
+    }
+  ],
+  "Version": "2012-10-17"
+}
+EOF
 }
 
 // Auth server uses route53 to get certs for domain, this allows
@@ -147,29 +157,29 @@ resource "aws_iam_role_policy" "auth_route53" {
 
   policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Id": "certbot-dns-route53 policy",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "route53:ListHostedZones",
-                "route53:GetChange"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Effect" : "Allow",
-            "Action" : [
-                "route53:ChangeResourceRecordSets"
-            ],
-            "Resource" : [
-                "arn:aws:route53:::hostedzone/${data.aws_route53_zone.proxy.zone_id}"
-            ]
-        }
-    ]
+  "Id": "certbot-dns-route53 policy",
+  "Statement": [
+    {
+      "Action": [
+        "route53:ListHostedZones",
+        "route53:GetChange"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Action": [
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:route53:::hostedzone/${data.aws_route53_zone.proxy.zone_id}"
+      ]
+    }
+  ],
+  "Version": "2012-10-17"
 }
 EOF
 }

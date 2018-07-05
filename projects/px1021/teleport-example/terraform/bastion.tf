@@ -2,45 +2,56 @@
 // that could be spinned up on demand in case if
 // of need to have emrergency administrative access
 resource "aws_instance" "bastion" {
-  count                       = "1"
   ami                         = "${data.aws_ami.base.id}"
+  associate_public_ip_address = true
+  count                       = "1"
   instance_type               = "t2.medium"
   key_name                    = "${var.key_name}"
-  associate_public_ip_address = true
   source_dest_check           = false
-  vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
   subnet_id                   = "${element(aws_subnet.public.*.id, 0)}"
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-    TeleportRole = "bastion"
-  }
+
+  tags = "${merge(
+    local.default_tags,
+    map(
+      "Name", "james.lucktaylor.tidal",
+      "TeleportRole", "bastion",
+    )
+  )}"
+
+  vpc_security_group_ids = [
+    "${aws_security_group.bastion.id}",
+  ]
 }
 
 // Bastions are open to internet access
 resource "aws_security_group" "bastion" {
   name   = "${var.cluster_name}-bastion"
+  tags   = "${local.default_tags}"
   vpc_id = "${local.vpc_id}"
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }
 }
 
 // Ingress traffic is allowed to SSH 22 port only
 resource "aws_security_group_rule" "bastion_ingress_allow_ssh" {
-  type              = "ingress"
   from_port         = 22
-  to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.bastion.id}"
+  to_port           = 22
+  type              = "ingress"
+
+  cidr_blocks = [
+    "0.0.0.0/0",
+  ]
 }
 
 // Egress traffic is allowed everywhere
 resource "aws_security_group_rule" "proxy_egress_bastion_all_traffic" {
-  type              = "egress"
   from_port         = 0
-  to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.bastion.id}"
+  to_port           = 0
+  type              = "egress"
+
+  cidr_blocks = [
+    "0.0.0.0/0",
+  ]
 }

@@ -5,33 +5,51 @@ data "aws_ami" "base" {
   most_recent = true
 
   filter {
-    name   = "architecture"
-    values = ["x86_64"]
+    name = "architecture"
+
+    values = [
+      "x86_64",
+    ]
   }
 
   filter {
-    name   = "image-type"
-    values = ["machine"]
+    name = "image-type"
+
+    values = [
+      "machine",
+    ]
   }
 
   filter {
-    name   = "name"
-    values = ["debian-*-gp2-*"]
+    name = "name"
+
+    values = [
+      "debian-*-gp2-*",
+    ]
   }
 
   filter {
-    name   = "root-device-type"
-    values = ["ebs"]
+    name = "root-device-type"
+
+    values = [
+      "ebs",
+    ]
   }
 
   filter {
-    name   = "state"
-    values = ["available"]
+    name = "state"
+
+    values = [
+      "available",
+    ]
   }
 
   filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+    name = "virtualization-type"
+
+    values = [
+      "hvm",
+    ]
   }
 }
 
@@ -46,7 +64,10 @@ data "aws_availability_zones" "available" {}
 
 // Pick first two availability zones in the region
 locals {
-  azs = ["${data.aws_availability_zones.available.names[0]}", "${data.aws_availability_zones.available.names[1]}"]
+  azs = [
+    "${data.aws_availability_zones.available.names[0]}",
+    "${data.aws_availability_zones.available.names[1]}",
+  ]
 }
 
 // SSM is picking alias for key to use for encryption in SSM

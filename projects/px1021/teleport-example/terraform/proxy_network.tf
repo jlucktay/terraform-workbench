@@ -1,64 +1,74 @@
-// Proxy is deployed in public subnet to receive
-// traffic from Network load balancers.
+// Proxy is deployed in public subnet to receive traffic from Network load balancers.
 resource "aws_security_group" "proxy" {
   name   = "${var.cluster_name}-proxy"
+  tags   = "${local.default_tags}"
   vpc_id = "${local.vpc_id}"
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }
 }
 
 // SSH emergency access via bastion only
 resource "aws_security_group_rule" "proxy_ingress_allow_ssh" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  security_group_id = "${aws_security_group.proxy.id}"
+  from_port                = 22
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.proxy.id}"
+  to_port                  = 22
+  type                     = "ingress"
   source_security_group_id = "${aws_security_group.bastion.id}"
 }
 
 // Ingress proxy traffic is allowed from all ports
 resource "aws_security_group_rule" "proxy_ingress_allow_proxy" {
-  type              = "ingress"
   from_port         = 3023
-  to_port           = 3023
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.proxy.id}"
+  to_port           = 3023
+  type              = "ingress"
+
+  cidr_blocks = [
+    "0.0.0.0/0",
+  ]
 }
 
 // Ingress traffic to web port 3080 is allowed from all directions
 resource "aws_security_group_rule" "proxy_ingress_allow_web" {
-  type              = "ingress"
   from_port         = 3080
-  to_port           = 3080
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.proxy.id}"
+  to_port           = 3080
+  type              = "ingress"
+
+  cidr_blocks = [
+    "0.0.0.0/0",
+  ]
 }
 
 // Egress traffic is allowed everywhere
 resource "aws_security_group_rule" "proxy_egress_allow_all_traffic" {
-  type              = "egress"
   from_port         = 0
-  to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.proxy.id}"
+  to_port           = 0
+  type              = "egress"
+
+  cidr_blocks = [
+    "0.0.0.0/0",
+  ]
 }
 
 // Load balancer for proxy server
 resource "aws_lb" "proxy" {
-  name            = "${var.cluster_name}-proxy"
-  internal        = false
-  subnets         = ["${aws_subnet.public.*.id}"]
+  idle_timeout       = 3600
+  internal           = false
   load_balancer_type = "network"
-  idle_timeout    = 3600
+  name               = "${var.cluster_name}-proxy"
+  tags               = "${local.default_tags}"
 
-  tags {
-    TeleportCluster = "${var.cluster_name}"
-  }
+  depends_on = [
+    "aws_internet_gateway.teleport",
+  ]
+
+  subnets = [
+    "${aws_subnet.public.*.id}",
+  ]
 }
 
 // Proxy is for SSH proxy - jumphost target endpoint.
@@ -72,7 +82,7 @@ resource "aws_lb_target_group" "proxy_proxy" {
 resource "aws_lb_listener" "proxy_proxy" {
   load_balancer_arn = "${aws_lb.proxy.arn}"
   port              = "3023"
-  protocol = "TCP"
+  protocol          = "TCP"
 
   default_action {
     target_group_arn = "${aws_lb_target_group.proxy_proxy.arn}"
@@ -80,13 +90,12 @@ resource "aws_lb_listener" "proxy_proxy" {
   }
 }
 
-// This is address used for remote clusters to connect to and the users
-// accessing web UI.
+// This is address used for remote clusters to connect to and the users accessing web UI.
 resource "aws_lb_target_group" "proxy_web" {
   name     = "${var.cluster_name}-proxy-web"
   port     = 3080
-  vpc_id   = "${aws_vpc.teleport.id}"
   protocol = "TCP"
+  vpc_id   = "${aws_vpc.teleport.id}"
 }
 
 resource "aws_lb_listener" "proxy_web" {
@@ -105,8 +114,8 @@ resource "aws_lb_listener" "proxy_web" {
 resource "aws_lb_target_group" "proxy_grafana" {
   name     = "${var.cluster_name}-proxy-grafana"
   port     = 8443
-  vpc_id   = "${aws_vpc.teleport.id}"
   protocol = "TCP"
+  vpc_id   = "${aws_vpc.teleport.id}"
 }
 
 resource "aws_lb_listener" "proxy_grafana" {
@@ -119,4 +128,3 @@ resource "aws_lb_listener" "proxy_grafana" {
     type             = "forward"
   }
 }
-
