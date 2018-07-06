@@ -2,7 +2,8 @@
 IFS=$'\n\t'
 
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
-    echo "This script '${BASH_SOURCE[0]}' must be sourced."
+    echo "This script '${BASH_SOURCE[0]}' must be sourced, like so:"
+    echo "    $(tput setab 7 ; tput setaf 0). ${BASH_SOURCE[0]}$(tput sgr0)"
     exit 1
 fi
 
