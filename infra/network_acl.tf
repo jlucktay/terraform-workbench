@@ -6,14 +6,12 @@ resource "aws_default_network_acl" "main" {
     "${aws_subnet.public.*.id}",
   ]
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Name", "james.lucktaylor.acl",
-      )
+  tags = "${merge(
+    local.default-tags,
+    map(
+      "Name", "james.lucktaylor.acl",
     )
-  }"
+  )}"
 
   egress {
     action     = "allow"
