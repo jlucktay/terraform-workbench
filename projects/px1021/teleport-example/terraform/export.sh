@@ -19,4 +19,7 @@ export TF_VAR_route53_domain="tidal.teleport.demo.${TF_VAR_route53_zone}"
 export TF_VAR_s3_bucket_name="james.lucktaylor.tidal.teleport.demo"
 export TF_VAR_email="james.lucktaylor@cloudreach.com"
 
+TF_VAR_grafana_pass=$(base64 --decode < export.secret.grafana_pass.txt)
+export TF_VAR_grafana_pass
+
 echo "Done!"

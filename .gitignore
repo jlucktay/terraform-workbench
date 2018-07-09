@@ -15,6 +15,7 @@ plan.*.txt
 # Secrets
 /projects/px1021/GoogleIDP*
 /projects/px1021/teleport-example/terraform/license.pem
+/projects/px1021/**/export.secret.*
 
 # Binaries
 *.zip
