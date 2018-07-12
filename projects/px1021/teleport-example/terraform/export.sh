@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-IFS=$'\n\t'
 
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
     echo "This script '${BASH_SOURCE[0]}' must be sourced, like so:"
     echo "    $(tput setab 7 ; tput setaf 0). ${BASH_SOURCE[0]}$(tput sgr0)"
     exit 1
 fi
+
+PreviousIFS=$IFS
+IFS=$'\n\t'
 
 echo -n "Exporting Tidal Teleport demo variables for Terraform... "
 
@@ -21,5 +23,7 @@ export TF_VAR_email="james.lucktaylor@cloudreach.com"
 
 TF_VAR_grafana_pass=$(base64 --decode < export.secret.grafana_pass.txt)
 export TF_VAR_grafana_pass
+
+IFS=$PreviousIFS
 
 echo "Done!"
