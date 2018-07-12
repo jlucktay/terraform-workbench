@@ -37,12 +37,15 @@ resource "aws_iam_role_policy" "auth_ssm" {
   "Statement": [
     {
       "Action": [
+        "ssm:AddTagsToResource",
+        "ssm:DeleteParameter",
         "ssm:DescribeParameters",
+        "ssm:GetParameter",
         "ssm:GetParameters",
         "ssm:GetParametersByPath",
-        "ssm:GetParameter",
+        "ssm:ListTagsForResource",
         "ssm:PutParameter",
-        "ssm:DeleteParameter"
+        "ssm:RemoveTagsFromResource"
       ],
       "Effect": "Allow",
       "Resource": "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/teleport/${var.cluster_name}/*"
@@ -135,8 +138,8 @@ resource "aws_iam_role_policy" "auth_s3" {
     },
     {
       "Action": [
-        "s3:PutObject",
-        "s3:GetObject"
+        "s3:GetObject",
+        "s3:PutObject"
       ],
       "Effect": "Allow",
       "Resource": [
@@ -161,8 +164,8 @@ resource "aws_iam_role_policy" "auth_route53" {
   "Statement": [
     {
       "Action": [
-        "route53:ListHostedZones",
-        "route53:GetChange"
+        "route53:GetChange",
+        "route53:ListHostedZones"
       ],
       "Effect": "Allow",
       "Resource": [
