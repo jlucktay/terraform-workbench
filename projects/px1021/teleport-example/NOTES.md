@@ -14,9 +14,25 @@ Labels, which are either static or dynamic: [further reading](https://gravitatio
 
 - Portability?
 
-### Entry point, e.g. a load balancer
+### Entry points
 
-Double check the Terraform example. Prety sure this is the layout it sets up.
+- Auth
+  - ELB (port 3025)
+  - Auth, 2x EC2s
+
+- Monitor
+  - ELB (port 8086)
+  - Grafana monitor, 1x EC2
+
+- Proxy
+  - Route 53
+  - ELB
+    - Port 443
+      - ...
+    - Port 3023
+      - ...
+    - Port 8443
+      - Grafana monitor, 1x EC2
 
 ## Followups from Gravitational
 
