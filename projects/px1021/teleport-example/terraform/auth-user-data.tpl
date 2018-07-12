@@ -51,7 +51,7 @@ popd
 curl $${CURL_OPTS} -O https://bootstrap.pypa.io/get-pip.py
 python2.7 get-pip.py
 pip install awscli
-aws ssm get-parameter --with-decryption --name /teleport/${cluster_name}/license --region ${region} --query 'Parameter.Value' --output text > /var/lib/teleport/license.pem 
+aws ssm get-parameter --with-decryption --name /teleport/${cluster_name}/license --region ${region} --query 'Parameter.Value' --output text > /var/lib/teleport/license.pem
 chown -R teleport:adm /var/lib/teleport/license.pem
 
 # Teleport Auth server is using DynamoDB as a backend
@@ -96,7 +96,7 @@ EOF
 cat >/etc/systemd/system/teleport.service <<EOF
 [Unit]
 Description=Teleport SSH Service
-After=network.target 
+After=network.target
 
 [Service]
 User=teleport
@@ -164,16 +164,19 @@ set -o pipefail
 PROXY_TOKEN=\$$(uuid)
 /usr/local/bin/tctl nodes add --roles=proxy --ttl=4h --token=\$${PROXY_TOKEN}
 aws ssm put-parameter --name /teleport/${cluster_name}/tokens/proxy --region ${region} --type="SecureString" --value="\$${PROXY_TOKEN}" --overwrite
+aws ssm add-tags-to-resource --region=${region} --resource-type Parameter --resource-id /teleport/${cluster_name}/tokens/proxy --tags Key=KillDate,Value=01/01/2019 Key=Owner,Value=james.lucktaylor Key=Purpose,Value="Client PoC/demo"
 
 # Node token authenticates nodes joining the cluster
 NODE_TOKEN=\$$(uuid)
 /usr/local/bin/tctl nodes add --roles=node --ttl=4h --token=\$${NODE_TOKEN}
 aws ssm put-parameter --name /teleport/${cluster_name}/tokens/node --region ${region} --type="SecureString" --value="\$${NODE_TOKEN}" --overwrite
+aws ssm add-tags-to-resource --region=${region} --resource-type Parameter --resource-id /teleport/${cluster_name}/tokens/node --tags Key=KillDate,Value=01/01/2019 Key=Owner,Value=james.lucktaylor Key=Purpose,Value="Client PoC/demo"
 
 # Export CA certificate to SSM parameter store
 # so nodes and proxies can check the identity of the auth server they are connecting to
 CERT=\$$(/usr/local/bin/tctl auth export --type=tls)
 aws ssm put-parameter --name /teleport/${cluster_name}/ca --region ${region} --type="String" --value="\$${CERT}" --overwrite
+aws ssm add-tags-to-resource --region=${region} --resource-type Parameter --resource-id /teleport/${cluster_name}/ca  --tags Key=KillDate,Value=01/01/2019 Key=Owner,Value=james.lucktaylor Key=Purpose,Value="Client PoC/demo"
 
 EOF
 chmod 755 /usr/local/bin/teleport-ssm-publish-tokens
@@ -317,7 +320,7 @@ cat >/etc/telegraf/telegraf.conf <<EOF
 [[inputs.procstat]]
   exe = "teleport"
   prefix = "teleport"
-  
+
 [[inputs.prometheus]]
   # An array of urls to scrape metrics from.
   urls = ["http://127.0.0.1:3434/metrics"]
