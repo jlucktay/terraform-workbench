@@ -75,8 +75,9 @@ resource "aws_lb" "proxy" {
 resource "aws_lb_target_group" "proxy_proxy" {
   name     = "${var.cluster_name}-proxy-proxy"
   port     = 3023
-  vpc_id   = "${aws_vpc.teleport.id}"
   protocol = "TCP"
+  tags     = "${local.default_tags}"
+  vpc_id   = "${aws_vpc.teleport.id}"
 }
 
 resource "aws_lb_listener" "proxy_proxy" {
@@ -95,6 +96,7 @@ resource "aws_lb_target_group" "proxy_web" {
   name     = "${var.cluster_name}-proxy-web"
   port     = 3080
   protocol = "TCP"
+  tags     = "${local.default_tags}"
   vpc_id   = "${aws_vpc.teleport.id}"
 }
 
@@ -115,6 +117,7 @@ resource "aws_lb_target_group" "proxy_grafana" {
   name     = "${var.cluster_name}-proxy-grafana"
   port     = 8443
   protocol = "TCP"
+  tags     = "${local.default_tags}"
   vpc_id   = "${aws_vpc.teleport.id}"
 }
 

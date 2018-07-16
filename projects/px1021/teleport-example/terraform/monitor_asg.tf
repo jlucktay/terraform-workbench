@@ -153,6 +153,7 @@ resource "aws_lb_target_group" "monitor" {
   name     = "${var.cluster_name}-monitor"
   port     = 8086
   protocol = "TCP"
+  tags     = "${local.default_tags}"
   vpc_id   = "${aws_vpc.teleport.id}"
 }
 

@@ -130,6 +130,7 @@ resource "aws_lb_target_group" "auth" {
   name     = "${var.cluster_name}-auth"
   port     = 3025
   protocol = "TCP"
+  tags     = "${local.default_tags}"
   vpc_id   = "${aws_vpc.teleport.id}"
 }
 
