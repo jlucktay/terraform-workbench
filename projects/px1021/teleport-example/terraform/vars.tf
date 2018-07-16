@@ -28,13 +28,13 @@ variable "teleport_uid" {
 // Instance types used for authentication servers auto scale groups
 variable "auth_instance_type" {
   type    = "string"
-  default = "m4.large"
+  default = "m5.large"
 }
 
 // Instance types used for proxy auto scale groups
 variable "proxy_instance_type" {
   type    = "string"
-  default = "m4.large"
+  default = "m5.large"
 }
 
 // Instance types used for teleport nodes auto scale groups
@@ -131,7 +131,7 @@ variable "grafana_version" {
 // Instance types used for proxy auto scale groups
 variable "monitor_instance_type" {
   type    = "string"
-  default = "m4.large"
+  default = "m5.large"
 }
 
 // Password for grafana admin user
