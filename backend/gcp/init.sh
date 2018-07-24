@@ -15,3 +15,15 @@ export TF_VAR_billing_account=$GCloudBillingId
 export TF_ADMIN="px1060-terraform-admin"
 export TF_CREDS=~/.config/gcloud/${TF_ADMIN}.json
 # Note: The TF_ADMIN variable will be used for the name of the Terraform Admin Project and must be unique.
+
+# # Create the Terraform Admin Project
+# gcloud projects create ${TF_ADMIN} \
+#   --organization ${TF_VAR_org_id} \
+#   --set-as-default
+
+# gcloud beta billing projects link ${TF_ADMIN} \
+#   --billing-account ${TF_VAR_billing_account}
+
+# # Create the Terraform service account
+# gcloud iam service-accounts create terraform \
+#   --display-name "Terraform admin account"
