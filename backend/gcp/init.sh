@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+    echo "This script '${BASH_SOURCE[0]}' must be sourced, like so:"
+    echo "    $(tput setab 7 ; tput setaf 0). ${BASH_SOURCE[0]}$(tput sgr0)"
+    exit 1
+fi
+
+PreviousIFS=$IFS
 IFS=$'\n\t'
+
+echo -n "Exporting PX1060 variables for Terraform... "
 
 # Find the values for GCloudOrgId and GCloudBillingId:
 # gcloud organizations list
@@ -16,14 +25,6 @@ export TF_ADMIN="px1060-terraform-admin"
 export TF_CREDS=~/.config/gcloud/${TF_ADMIN}.json
 # Note: The TF_ADMIN variable will be used for the name of the Terraform Admin Project and must be unique.
 
-# # Create the Terraform Admin Project
-# gcloud projects create ${TF_ADMIN} \
-#   --organization ${TF_VAR_org_id} \
-#   --set-as-default
+IFS=$PreviousIFS
 
-# gcloud beta billing projects link ${TF_ADMIN} \
-#   --billing-account ${TF_VAR_billing_account}
-
-# # Create the Terraform service account
-# gcloud iam service-accounts create terraform \
-#   --display-name "Terraform admin account"
+echo "Done!"
