@@ -3,12 +3,12 @@ version: v2
 metadata:
   name: GSuiteSAML
 spec:
-  display: "G-Suite SSO via jimmy.gr"
-  acs: https://34.254.121.240:3080/v1/webapi/saml/acs
-  attributes_to_roles:
-    - {name: "groups", value: "jimmy.gr-Admin", roles: ["Teleport-Admin"]}
-    - {name: "groups", value: "jimmy.gr-Dev", roles: ["Teleport-Dev"]}
-  entity_descriptor: |
+  display: "G-Suite SSO" # This 'display' string is what appears on the Teleport front login page
+  acs: https://teleport.tidal.com:3080/v1/webapi/saml/acs # Update this address accordingly
+  attributes_to_roles: # Configure these mappings appropriately; Teleport roles named on the right side will be granted if the attributes from the left side are sent by GSuite SAML for a given user:
+    - {name: "groups", value: "GSuite-Admin", roles: ["Teleport-Admin"]}
+    - {name: "groups", value: "GSuite-Dev", roles: ["Teleport-Dev"]}
+  entity_descriptor: | # This will be provided by GSuite as a download, so copy/paste it in here before feeding this YAML file into Teleport
     <?xml version="1.0" encoding="UTF-8" standalone="no"?>
     <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://accounts.google.com/o/saml2?idpid=C02dhxgzt" validUntil="2023-06-12T07:39:48.000Z">
       <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -17,7 +17,7 @@ spec:
             <ds:X509Data>
               <ds:X509Certificate>
 
-                Put './GoogleIDPCertificate-jimmy.gr.pem' here!
+                Put your 'GoogleIDPCertificate.pem' here!
 
               </ds:X509Certificate>
             </ds:X509Data>
