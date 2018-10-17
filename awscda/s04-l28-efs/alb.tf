@@ -6,14 +6,12 @@ resource "aws_lb" "main" {
   security_groups    = ["${data.aws_security_group.dmz.id}"]
   subnets            = ["${data.aws_subnet_ids.main.ids}"]
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Name", "james-lucktaylor-awscda-efs-alb",
-      )
+  tags = "${merge(
+    local.default-tags,
+    map(
+      "Name", "james-lucktaylor-awscda-efs-alb",
     )
-  }"
+  )}"
 }
 
 resource "aws_lb_listener" "main" {
@@ -32,14 +30,12 @@ resource "aws_lb_target_group" "main" {
   protocol = "HTTP"
   vpc_id   = "${data.aws_vpc.main.id}"
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Name", "james-lucktaylor-awscda-efs-tg",
-      )
+  tags = "${merge(
+    local.default-tags,
+    map(
+      "Name", "james-lucktaylor-awscda-efs-tg",
     )
-  }"
+  )}"
 
   health_check {
     healthy_threshold   = "3"

@@ -47,11 +47,11 @@ gsutil mb -p "${TF_ADMIN}" "gs://${TF_ADMIN}"
 
 cat > backend.tf <<EOF
 terraform {
- backend "gcs" {
-   bucket  = "${TF_ADMIN}"
-   path    = "/terraform.tfstate"
-   project = "${TF_ADMIN}"
- }
+    backend "gcs" {
+        bucket  = "${TF_ADMIN}"
+        path    = "/terraform.tfstate"
+        project = "${TF_ADMIN}"
+    }
 }
 EOF
 
