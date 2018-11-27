@@ -162,7 +162,7 @@ resource "aws_appautoscaling_target" "read_target" {
 
   lifecycle {
     ignore_changes = [
-      "role_arn"
+      "role_arn",
     ]
   }
 }
@@ -193,7 +193,7 @@ resource "aws_appautoscaling_target" "write_target" {
 
   lifecycle {
     ignore_changes = [
-      "role_arn"
+      "role_arn",
     ]
   }
 }

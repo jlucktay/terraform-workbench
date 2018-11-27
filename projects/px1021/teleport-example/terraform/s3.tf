@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "certs" {
   bucket        = "${var.s3_bucket_name}"
   force_destroy = true
 
-  tags   = "${local.default_tags}"
+  tags = "${local.default_tags}"
 
   server_side_encryption_configuration {
     rule {
