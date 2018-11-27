@@ -10,7 +10,7 @@
             },
             "Effect": "Deny",
             "Principal": "*",
-            "Resource": "arn:aws:s3:::james-lucktaylor-terraform/*",
+            "Resource": "arn:aws:s3:::${state_bucket}/*",
             "Sid": "DenyIncorrectEncryptionHeader"
         },
         {
@@ -22,7 +22,7 @@
             },
             "Effect": "Deny",
             "Principal": "*",
-            "Resource": "arn:aws:s3:::james-lucktaylor-terraform/*",
+            "Resource": "arn:aws:s3:::${state_bucket}/*",
             "Sid": "DenyUnEncryptedObjectUploads"
         },
         {
@@ -34,7 +34,7 @@
             },
             "Effect": "Deny",
             "Principal": "*",
-            "Resource": "arn:aws:s3:::james-lucktaylor-terraform/*",
+            "Resource": "arn:aws:s3:::${state_bucket}/*",
             "Sid": "DenypublicObjectUploads"
         }
     ],

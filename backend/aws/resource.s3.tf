@@ -1,15 +1,12 @@
 resource "aws_s3_bucket" "state-storage" {
   acl           = "private"
-  bucket        = "james-lucktaylor-terraform"
+  bucket        = "${var.state_bucket}"
   force_destroy = false
   region        = "${data.aws_region.current.name}"
 
-  tags = "${merge(
-    local.default-tags,
-    map(
-      "Name", "james-lucktaylor-terraform",
-    )
-  )}"
+  tags = {
+    Name = "${var.state_bucket}"
+  }
 
   server_side_encryption_configuration {
     rule {
@@ -26,5 +23,5 @@ resource "aws_s3_bucket" "state-storage" {
 
 resource "aws_s3_bucket_policy" "state-storage" {
   bucket = "${aws_s3_bucket.state-storage.id}"
-  policy = "${file("s3.policy.json")}"
+  policy = "${data.template_file.policy.rendered}"
 }
