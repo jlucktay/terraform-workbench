@@ -2,8 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-StateBucket="jlucktay.terraform.state.london"
-
 # Set up environment with keys
 awsume jlucktay
 
@@ -12,11 +10,11 @@ find .terraform -type d -not -name .terraform -not -path "*plugins*" -exec rm -r
 rm -fv terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info plan.*.out
 
 # Get Terraform into shape
-TF_VAR_state_bucket=$StateBucket terraform init
+terraform init
 
 set +e
-terraform import aws_s3_bucket.state-storage $StateBucket
-terraform import aws_dynamodb_table.state-locking-consistency jlucktay.terraform.state
+terraform import aws_s3_bucket.state-storage "${TF_VAR_state_bucket:?}"
+terraform import aws_dynamodb_table.state-locking-consistency "${TF_VAR_state_dynamodb:?}"
 
 set -e
 terraform apply --auto-approve
