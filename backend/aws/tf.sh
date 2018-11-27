@@ -12,9 +12,10 @@ rm -fv terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info p
 # Get Terraform into shape
 terraform init
 
+# Disabled errexit for Terraform's import attempts
+# This allows flow to fall through to applying/creating resources
 set +e
 terraform import aws_s3_bucket.state-storage "${TF_VAR_state_bucket:?}"
 terraform import aws_dynamodb_table.state-locking-consistency "${TF_VAR_state_dynamodb:?}"
-
 set -e
 terraform apply --auto-approve
