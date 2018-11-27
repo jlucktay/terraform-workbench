@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 yum update -y
 yum install httpd24 php56 git -y
 service httpd start

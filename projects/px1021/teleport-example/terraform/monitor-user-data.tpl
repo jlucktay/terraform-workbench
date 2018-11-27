@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -x
 
 # Install uuid used for token generation, nginx for grafana frontend

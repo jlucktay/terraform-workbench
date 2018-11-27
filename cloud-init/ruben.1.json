@@ -164,7 +164,7 @@
                             "Fn::Join": [
                                 "",
                                 [
-                                    "#!/bin/bash\n",
+                                    "#!/usr/bin/env bash\n",
                                     "\n",
                                     "INPUT=\"$(cat)\"\n",
                                     "CW_JSON_OPEN='{ \"Namespace\": \"EFS\", \"MetricData\": [ '\n",
@@ -320,7 +320,7 @@
                             "Fn::Join": [
                                 "",
                                 [
-                                    "#!/bin/bash\n",
+                                    "#!/usr/bin/env bash\n",
                                     "echo -e 'ECS_CLUSTER=",
                                     {
                                         "Ref": "CLServices"

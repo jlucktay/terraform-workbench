@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -x
 
 # Install uuid used for random token generation
@@ -124,7 +124,7 @@ systemctl start teleport
 # This pattern can be implemented in many different ways, e.g. using ASG group of 1 as a separate process
 # or in Kubernetes as a deployment of scale 1.
 cat >/usr/local/bin/teleport-lock <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 set -x
 
 LOCK="/teleport/${cluster_name}"
@@ -156,7 +156,7 @@ chmod 755 /usr/local/bin/teleport-lock
 # unit rotates the current token every hour, but tokens are valid for 2 hours
 # to handle timing cases.
 cat >/usr/local/bin/teleport-ssm-publish-tokens <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 set -o pipefail
 
@@ -215,7 +215,7 @@ pip install certbot==0.21.0 certbot-dns-route53==0.21.0
 # have to control route53 zone as it modifes zone records
 # to prove to letsencrypt that you own the domain.
 cat >/usr/local/bin/teleport-get-cert <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 set -x
 

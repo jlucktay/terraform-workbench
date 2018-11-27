@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -x
 
 # Install uuid used for token generation
@@ -51,7 +51,7 @@ LOCAL_HOSTNAME=`curl http://169.254.169.254/latest/meta-data/local-hostname`
 # Script does not attempt to fetch token during boot, because the tokens are published after
 # Auth servers are started.
 cat >/usr/local/bin/teleport-ssm-get-token <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 set -o pipefail
 
@@ -97,7 +97,7 @@ EOF
 cat >/etc/systemd/system/teleport.service <<EOF
 [Unit]
 Description=Teleport SSH Service
-After=network.target 
+After=network.target
 
 [Service]
 User=teleport
@@ -171,7 +171,7 @@ cat >/etc/telegraf/telegraf.conf <<EOF
 [[inputs.procstat]]
   exe = "teleport"
   prefix = "teleport"
-  
+
 [[inputs.prometheus]]
   # An array of urls to scrape metrics from.
   urls = ["http://127.0.0.1:3434/metrics"]
