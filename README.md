@@ -1,3 +1,3 @@
-# James Lucktaylor - Terraform
+# Terraform Workbench
 
-Going to (attempt to) keep track of my CELab resources in here!
+Keeping track of resources!
