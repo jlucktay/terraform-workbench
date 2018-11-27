@@ -13,5 +13,10 @@ rm -fv terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info p
 
 # Get Terraform into shape
 TF_VAR_state_bucket=$StateBucket terraform init
+
+set +e
 terraform import aws_s3_bucket.state-storage $StateBucket
-terraform import aws_dynamodb_table.state-locking-consistency jlucktay.terraform
+terraform import aws_dynamodb_table.state-locking-consistency jlucktay.terraform.state
+
+set -e
+terraform apply --auto-approve

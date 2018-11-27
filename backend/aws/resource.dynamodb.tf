@@ -1,11 +1,11 @@
 resource "aws_dynamodb_table" "state-locking-consistency" {
   hash_key       = "LockID"
-  name           = "jlucktay.terraform"
+  name           = "jlucktay.terraform.state"
   read_capacity  = 1
   write_capacity = 1
 
   tags = {
-    Name = "jlucktay.terraform"
+    Name = "jlucktay.terraform.state"
   }
 
   attribute {
