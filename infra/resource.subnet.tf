@@ -5,15 +5,10 @@ resource "aws_subnet" "private" {
   map_public_ip_on_launch = false
   vpc_id                  = "${aws_vpc.main.id}"
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Name", "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.private",
-        "Tier", "Private",
-      )
-    )
-  }"
+  tags = {
+    Name = "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.private"
+    Tier = "Private"
+  }
 }
 
 resource "aws_subnet" "public" {
@@ -23,13 +18,8 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
   vpc_id                  = "${aws_vpc.main.id}"
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Name", "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.public",
-        "Tier", "Public",
-      )
-    )
-  }"
+  tags = {
+    Name = "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.public"
+    Tier = "Public"
+  }
 }

@@ -2,14 +2,9 @@ resource "aws_default_security_group" "main" {
   revoke_rules_on_delete = true
   vpc_id                 = "${aws_vpc.main.id}"
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Name", "james.lucktaylor.sg.default",
-      )
-    )
-  }"
+  tags = {
+    Name = "james.lucktaylor.sg.default"
+  }
 
   egress {
     cidr_blocks      = ["0.0.0.0/0"]
