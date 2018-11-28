@@ -2,14 +2,9 @@ resource "aws_s3_bucket" "website" {
   bucket = "james-lucktaylor-website"
   region = "${var.region}"
 
-  tags = "${
-    merge(
-      local.default-tags,
-      map(
-        "Name", "james-lucktaylor-website",
-      )
-    )
-  }"
+  tags = {
+    Name = "james-lucktaylor-website"
+  }
 
   website {
     error_document = "error.html"
