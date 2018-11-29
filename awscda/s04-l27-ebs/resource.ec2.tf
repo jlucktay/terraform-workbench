@@ -14,90 +14,36 @@ resource "aws_instance" "awscda" {
   volume_tags = {
     Name = "james.lucktaylor.ec2.awscda"
   }
-
-  lifecycle {
-    ignore_changes = [
-      "tags.%",
-      "tags.Created",
-      "volume_tags.%",
-      "volume_tags.Created",
-      "volume_tags.Name",
-      "volume_tags.ParentInstance",
-    ]
-  }
 }
 
-resource "aws_ebs_volume" "sc1" {
-  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  count             = "${aws_instance.awscda.count}"
-  size              = 500
-  type              = "sc1"
+locals {
+  drives = {
+    sc1      = 500
+    st1      = 500
+    standard = 8
+  }
+
+  devices = [
+    "sdb",
+    "sdc",
+    "sdd",
+  ]
+}
+
+resource "aws_ebs_volume" "ebs" {
+  availability_zone = "${aws_instance.awscda.availability_zone}"
+  count             = "${length(local.drives)}"
+  size              = "${element(values(local.drives), count.index)}"
+  type              = "${element(keys(local.drives), count.index)}"
 
   tags = {
-    Name = "james.lucktaylor.ec2.awscda.sc1"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      "tags.%",
-      "tags.Created",
-      "tags.ParentInstance",
-    ]
+    Name = "james.lucktaylor.ec2.awscda.${element(keys(local.drives), count.index)}"
   }
 }
 
-resource "aws_volume_attachment" "sc1" {
-  device_name = "/dev/sdb"
+resource "aws_volume_attachment" "attach" {
+  count       = "${length(local.devices)}"
+  device_name = "/dev/${element(local.devices, count.index)}"
   instance_id = "${aws_instance.awscda.id}"
-  volume_id   = "${aws_ebs_volume.sc1.id}"
-}
-
-resource "aws_ebs_volume" "st1" {
-  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  count             = "${aws_instance.awscda.count}"
-  size              = 500
-  type              = "st1"
-
-  tags = {
-    Name = "james.lucktaylor.ec2.awscda.st1"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      "tags.%",
-      "tags.Created",
-      "tags.ParentInstance",
-    ]
-  }
-}
-
-resource "aws_volume_attachment" "st1" {
-  device_name = "/dev/sdc"
-  instance_id = "${aws_instance.awscda.id}"
-  volume_id   = "${aws_ebs_volume.st1.id}"
-}
-
-resource "aws_ebs_volume" "standard" {
-  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  count             = "${aws_instance.awscda.count}"
-  size              = 8
-  type              = "standard"
-
-  tags = {
-    Name = "james.lucktaylor.ec2.awscda.standard"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      "tags.%",
-      "tags.Created",
-      "tags.ParentInstance",
-    ]
-  }
-}
-
-resource "aws_volume_attachment" "standard" {
-  device_name = "/dev/sdd"
-  instance_id = "${aws_instance.awscda.id}"
-  volume_id   = "${aws_ebs_volume.standard.id}"
+  volume_id   = "${element(aws_ebs_volume.ebs.*.id, count.index)}"
 }
