@@ -47,10 +47,9 @@ resource "aws_ebs_volume" "sc1" {
 }
 
 resource "aws_volume_attachment" "sc1" {
-  device_name  = "/dev/sdb"
-  instance_id  = "${aws_instance.awscda.id}"
-  skip_destroy = true
-  volume_id    = "${aws_ebs_volume.sc1.id}"
+  device_name = "/dev/sdb"
+  instance_id = "${aws_instance.awscda.id}"
+  volume_id   = "${aws_ebs_volume.sc1.id}"
 }
 
 resource "aws_ebs_volume" "st1" {
@@ -73,10 +72,9 @@ resource "aws_ebs_volume" "st1" {
 }
 
 resource "aws_volume_attachment" "st1" {
-  device_name  = "/dev/sdc"
-  instance_id  = "${aws_instance.awscda.id}"
-  skip_destroy = true
-  volume_id    = "${aws_ebs_volume.st1.id}"
+  device_name = "/dev/sdc"
+  instance_id = "${aws_instance.awscda.id}"
+  volume_id   = "${aws_ebs_volume.st1.id}"
 }
 
 resource "aws_ebs_volume" "standard" {
@@ -99,8 +97,7 @@ resource "aws_ebs_volume" "standard" {
 }
 
 resource "aws_volume_attachment" "standard" {
-  device_name  = "/dev/sdd"
-  instance_id  = "${aws_instance.awscda.id}"
-  skip_destroy = true
-  volume_id    = "${aws_ebs_volume.standard.id}"
+  device_name = "/dev/sdd"
+  instance_id = "${aws_instance.awscda.id}"
+  volume_id   = "${aws_ebs_volume.standard.id}"
 }
