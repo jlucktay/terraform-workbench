@@ -17,33 +17,39 @@ resource "aws_instance" "awscda" {
 }
 
 locals {
-  drives = {
-    sc1      = 500
-    st1      = 500
-    standard = 8
-  }
-
-  devices = [
-    "sdb",
-    "sdc",
-    "sdd",
-  ]
+  volumes = "${list(
+    map(
+      "aws_type", "sc1",
+      "linux_device", "sdb",
+      "size", "500"
+    ),
+    map(
+      "aws_type", "st1",
+      "linux_device", "sdc",
+      "size", "500"
+    ),
+    map(
+      "aws_type", "standard",
+      "linux_device", "sdd",
+      "size", "8"
+    ),
+  )}"
 }
 
 resource "aws_ebs_volume" "ebs" {
   availability_zone = "${aws_instance.awscda.availability_zone}"
-  count             = "${length(local.drives)}"
-  size              = "${element(values(local.drives), count.index)}"
-  type              = "${element(keys(local.drives), count.index)}"
+  count             = "${length(local.volumes)}"
+  size              = "${lookup(local.volumes[count.index], "size")}"
+  type              = "${lookup(local.volumes[count.index], "aws_type")}"
 
   tags = {
-    Name = "james.lucktaylor.ec2.awscda.${element(keys(local.drives), count.index)}"
+    Name = "james.lucktaylor.ec2.awscda.${lookup(local.volumes[count.index], "aws_type")}"
   }
 }
 
 resource "aws_volume_attachment" "attach" {
-  count       = "${length(local.devices)}"
-  device_name = "/dev/${element(local.devices, count.index)}"
+  count       = "${length(local.volumes)}"
+  device_name = "/dev/${lookup(local.volumes[count.index], "linux_device")}"
   instance_id = "${aws_instance.awscda.id}"
   volume_id   = "${element(aws_ebs_volume.ebs.*.id, count.index)}"
 }
