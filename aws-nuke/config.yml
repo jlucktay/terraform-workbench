@@ -1,0 +1,8 @@
+regions:
+- "eu-west-2"
+
+account-blacklist:
+- "999999999999" # production dummy
+
+accounts:
+  "032335258367": # personal-sandbox
