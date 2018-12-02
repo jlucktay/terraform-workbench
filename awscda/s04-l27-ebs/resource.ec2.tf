@@ -25,19 +25,29 @@ resource "aws_instance" "awscda" {
 locals {
   volumes = [
     {
-      aws_type     = "sc1"
+      aws_type     = "gp2"
       linux_device = "sdb"
-      size         = "500"
+      size         = "1"
+    },
+    {
+      aws_type     = "io1"
+      linux_device = "sdc"
+      size         = "4"
     },
     {
       aws_type     = "st1"
-      linux_device = "sdc"
+      linux_device = "sdd"
+      size         = "500"
+    },
+    {
+      aws_type     = "sc1"
+      linux_device = "sde"
       size         = "500"
     },
     {
       aws_type     = "standard"
-      linux_device = "sdd"
-      size         = "8"
+      linux_device = "sdf"
+      size         = "1"
     },
   ]
 }
