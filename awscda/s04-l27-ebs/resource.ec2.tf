@@ -14,6 +14,12 @@ resource "aws_instance" "awscda" {
   volume_tags = {
     Name = "james.lucktaylor.ec2.awscda"
   }
+
+  lifecycle {
+    ignore_changes = [
+      "volume_tags.Name",
+    ]
+  }
 }
 
 locals {
