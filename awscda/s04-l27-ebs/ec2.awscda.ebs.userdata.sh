@@ -37,4 +37,8 @@ for drive in "${drives[@]}"; do
     echo "/dev/${drive}1   /mnt/${drive}1   ext4   defaults   0   2" | tee -a /etc/fstab
 
     mount "/mnt/${drive}1"
+
+    echo "Drive '$drive' complete!"
 done
+
+echo "User Data complete!"
