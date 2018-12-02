@@ -17,23 +17,23 @@ resource "aws_instance" "awscda" {
 }
 
 locals {
-  volumes = "${list(
-    map(
-      "aws_type", "sc1",
-      "linux_device", "sdb",
-      "size", "500"
-    ),
-    map(
-      "aws_type", "st1",
-      "linux_device", "sdc",
-      "size", "500"
-    ),
-    map(
-      "aws_type", "standard",
-      "linux_device", "sdd",
-      "size", "8"
-    ),
-  )}"
+  volumes = [
+    {
+      aws_type     = "sc1"
+      linux_device = "sdb"
+      size         = "500"
+    },
+    {
+      aws_type     = "st1"
+      linux_device = "sdc"
+      size         = "500"
+    },
+    {
+      aws_type     = "standard"
+      linux_device = "sdd"
+      size         = "8"
+    },
+  ]
 }
 
 resource "aws_ebs_volume" "ebs" {
