@@ -18,9 +18,11 @@ data "aws_security_group" "dmz" {
   }
 }
 
-data "aws_subnet" "main-a" {
-  filter {
-    name   = "tag:Name"
-    values = ["james.lucktaylor.subnet.a.public"]
+data "aws_subnet" "public" {
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
+  count             = "${length(data.aws_availability_zones.available.names)}"
+
+  tags {
+    Tier = "Public"
   }
 }

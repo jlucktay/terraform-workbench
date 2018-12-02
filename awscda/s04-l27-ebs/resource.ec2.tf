@@ -5,7 +5,7 @@ resource "aws_instance" "awscda" {
   count                       = "${length(data.aws_availability_zones.available.names)}"
   instance_type               = "t2.micro"
   key_name                    = "james.lucktaylor.${data.aws_region.current.name}"
-  subnet_id                   = "${data.aws_subnet.main-a.id}"
+  subnet_id                   = "${element(data.aws_subnet.public.*.id, count.index)}"
   user_data                   = "${file("ec2.awscda.ebs.userdata.sh")}"
 
   tags = {
