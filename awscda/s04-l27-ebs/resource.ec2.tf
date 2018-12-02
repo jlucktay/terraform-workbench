@@ -64,8 +64,9 @@ resource "aws_ebs_volume" "ebs" {
 }
 
 resource "aws_volume_attachment" "attach" {
-  count       = "${length(local.volumes)}"
-  device_name = "/dev/${lookup(local.volumes[count.index], "linux_device")}"
-  instance_id = "${aws_instance.awscda.id}"
-  volume_id   = "${element(aws_ebs_volume.ebs.*.id, count.index)}"
+  count        = "${length(local.volumes)}"
+  device_name  = "/dev/${lookup(local.volumes[count.index], "linux_device")}"
+  force_detach = true
+  instance_id  = "${aws_instance.awscda.id}"
+  volume_id    = "${element(aws_ebs_volume.ebs.*.id, count.index)}"
 }
