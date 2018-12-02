@@ -39,6 +39,8 @@ for drive in "${drives[@]}"; do
     mount "/mnt/${drive}1"
 
     echo "Drive '$drive' complete!"
+    echo
 done
 
 echo "User Data complete!"
+echo
