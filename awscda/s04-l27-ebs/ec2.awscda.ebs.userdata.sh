@@ -7,7 +7,7 @@ trap "echo DONE >> ~ec2-user/user-data.log" INT TERM EXIT
 
 yum update -y
 
-drives=( sdb sdc sdd )
+drives=( sdb sdc sdd sde sdf )
 
 for drive in "${drives[@]}"; do
     echo -n "Waiting for device '/dev/$drive'..."
