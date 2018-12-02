@@ -1,3 +1,5 @@
+# resource "aws_default_subnet" "default" {}
+
 resource "aws_subnet" "private" {
   availability_zone       = "${element(data.aws_availability_zones.available.names, count.index)}"
   cidr_block              = "${cidrsubnet(aws_vpc.main.cidr_block, 8, count.index + 128)}"

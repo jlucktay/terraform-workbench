@@ -18,7 +18,7 @@ resource "aws_volume_attachment" "attach" {
   volume_id    = "${element(aws_ebs_volume.ebs.*.id, count.index)}"
 }
 
-### Might need something like this, to destroy cleanly?
+### Might need something like this, to destroy volume attachments cleanly?
 # provisioner "remote-exec" {
 #   when = "destroy"
 #
