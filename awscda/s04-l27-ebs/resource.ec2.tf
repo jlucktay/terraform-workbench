@@ -9,11 +9,11 @@ resource "aws_instance" "awscda" {
   user_data                   = "${file("ec2.awscda.ebs.userdata.sh")}"
 
   tags = {
-    Name = "james.lucktaylor.ec2.awscda"
+    Name = "james.lucktaylor.ec2.awscda.${count.index}"
   }
 
   volume_tags = {
-    Name = "james.lucktaylor.ec2.awscda"
+    Name = "james.lucktaylor.ec2.awscda.${count.index}"
   }
 
   lifecycle {

@@ -6,7 +6,7 @@ resource "aws_ebs_volume" "ebs" {
   type              = "${lookup(local.volumes[count.index % length(local.volumes)], "aws_type")}"
 
   tags = {
-    Name = "james.lucktaylor.ec2.awscda.${lookup(local.volumes[count.index % length(local.volumes)], "aws_type")}"
+    Name = "james.lucktaylor.ec2.awscda.${lookup(local.volumes[count.index % length(local.volumes)], "aws_type")}.${count.index}"
   }
 }
 
