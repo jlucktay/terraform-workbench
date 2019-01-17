@@ -1,7 +1,13 @@
 resource "aws_instance" "web_server" {
-  ami                    = "${data.aws_ami.ubuntu.id}"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = ["${aws_security_group.web_server.id}"]
+  ami                         = "${data.aws_ami.ubuntu.id}"
+  associate_public_ip_address = true
+  instance_type               = "t2.micro"
+  key_name                    = "${aws_key_pair.my-public-key.key_name}"
+  subnet_id                   = "${aws_subnet.main.id}"
+
+  vpc_security_group_ids = [
+    "${aws_security_group.web_server.id}",
+  ]
 
   # Run a "Hello, World" web server on port 8080
   user_data = <<EOF
