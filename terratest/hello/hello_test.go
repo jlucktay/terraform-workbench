@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gruntwork-io/terratest/modules/http-helper"
+	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
@@ -29,6 +29,5 @@ func TestWebServer(t *testing.T) {
 	text := "Hello, World"
 	retries := 15
 	sleep := 5 * time.Second
-
 	http_helper.HttpGetWithRetry(t, url, status, text, retries, sleep)
 }
