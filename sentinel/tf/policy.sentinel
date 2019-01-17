@@ -1,0 +1,7 @@
+import "tfplan"
+
+main = rule {
+    all tfplan.terraforms as _, t {
+        t.backend == "asdfasdf"
+    }
+}
