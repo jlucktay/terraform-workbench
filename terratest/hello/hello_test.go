@@ -27,7 +27,7 @@ func TestWebServer(t *testing.T) {
 	sleep := 15 * time.Second
 	errGet := http_helper.HttpGetWithRetryE(t, url, status, text, retries, sleep)
 	if errGet == nil {
-		// At the end of the test, run `terraform destroy`
+		// At the end of the test, if the HTTP test was OK, run `terraform destroy`
 		terraform.Destroy(t, terraformOptions)
 	}
 }

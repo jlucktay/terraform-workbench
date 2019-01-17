@@ -1,7 +1,7 @@
 resource "aws_instance" "web_server" {
   ami                         = "${data.aws_ami.ubuntu.id}"
   associate_public_ip_address = true
-  instance_type               = "t2.micro"
+  instance_type               = "t3.micro"
   subnet_id                   = "${aws_subnet.main.id}"
 
   vpc_security_group_ids = [

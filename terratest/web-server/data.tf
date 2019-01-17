@@ -9,15 +9,7 @@ data "aws_ami" "ubuntu" {
     name = "name"
 
     values = [
-      "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*",
-    ]
-  }
-
-  filter {
-    name = "virtualization-type"
-
-    values = [
-      "hvm",
+      "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*",
     ]
   }
 }
