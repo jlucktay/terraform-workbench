@@ -14,20 +14,20 @@ func TestWebServer(t *testing.T) {
 		TerraformDir: "../web-server",
 	}
 
-	// At the end of the test, run `terraform destroy`
-	defer terraform.Destroy(t, terraformOptions)
-
 	// Run `terraform init` and `terraform apply`
 	terraform.InitAndApply(t, terraformOptions)
 
 	// Run `terraform output` to get the value of an output variable
 	url := terraform.Output(t, terraformOptions, "url")
 
-	// Verify that we get back a 200 OK with the expected text. It
-	// takes ~1 min for the Instance to boot, so retry a few times.
+	// Verify that we (eventually) get back a 200 OK with the expected text
 	status := 200
 	text := "Hello, World"
-	retries := 15
-	sleep := 5 * time.Second
-	http_helper.HttpGetWithRetry(t, url, status, text, retries, sleep)
+	retries := 20
+	sleep := 15 * time.Second
+	errGet := http_helper.HttpGetWithRetryE(t, url, status, text, retries, sleep)
+	if errGet == nil {
+		// At the end of the test, run `terraform destroy`
+		terraform.Destroy(t, terraformOptions)
+	}
 }

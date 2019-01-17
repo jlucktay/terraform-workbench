@@ -3,5 +3,5 @@ output "ip" {
 }
 
 output "url" {
-  value = "http://${aws_instance.web_server.public_ip}:8080"
+  value = "http://${aws_instance.web_server.public_dns}:8080"
 }

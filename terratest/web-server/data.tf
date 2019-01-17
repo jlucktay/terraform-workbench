@@ -24,8 +24,6 @@ data "aws_ami" "ubuntu" {
 
 data "aws_availability_zones" "available" {}
 
-data "aws_region" "current" {}
-
 data "external" "ip" {
   program = [
     "./data.ip.sh",
