@@ -8,7 +8,7 @@ resource "aws_route_table_association" "public" {
   subnet_id = "${aws_subnet.main.id}"
 }
 
-resource "aws_route" "public-igw" {
+resource "aws_route" "public_igw" {
   route_table_id = "${aws_route_table.public.id}"
 
   destination_cidr_block = "0.0.0.0/0"
