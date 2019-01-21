@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,6 +18,17 @@ import (
 // Default is the default target when the command executes `mage` in Cloud Shell
 var Default = Full
 
+var labID string
+
+func init() {
+	fmt.Println("Looking up lab subscription...")
+	initLabID, errAz := exec.Command("sh", "-c", "az account list 2>/dev/null | jq -r '.[] | select( .name == \"LAB27\" ) | .id'").Output()
+	if errAz != nil {
+		log.Fatal(errAz)
+	}
+	labID = strings.TrimSpace(string(initLabID))
+}
+
 // Full runs Clean, Format, Unit and Integration in sequence
 func Full() {
 	mg.Deps(Unit)
@@ -25,12 +37,8 @@ func Full() {
 
 // SelectLab selects the correct Azure lab subscription to provision test resources in
 func SelectLab() error {
-	labID, errAz := exec.Command("sh", "-c", "az account list 2>/dev/null | jq -r '.[] | select( .name == \"LAB27\" ) | .id'").Output()
-	if errAz != nil {
-		return errAz
-	}
-
-	return sh.RunV("az", "account", "set", fmt.Sprintf("--subscription=\"%s\"", strings.TrimSpace(string(labID))))
+	fmt.Println("Selecting lab subscription...")
+	return sh.RunV("az", "account", "set", fmt.Sprintf("--subscription=%s", labID))
 }
 
 // Unit runs unit tests
