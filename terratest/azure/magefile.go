@@ -6,7 +6,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -21,10 +23,21 @@ func Full() {
 	mg.Deps(Integration)
 }
 
+// SelectLab selects the correct Azure lab subscription to provision test resources in
+func SelectLab() error {
+	labID, errAz := exec.Command("sh", "-c", "az account list 2>/dev/null | jq -r '.[] | select( .name == \"LAB27\" ) | .id'").Output()
+	if errAz != nil {
+		return errAz
+	}
+
+	return sh.RunV("az", "account", "set", fmt.Sprintf("--subscription=\"%s\"", strings.TrimSpace(string(labID))))
+}
+
 // Unit runs unit tests
 func Unit() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
+	mg.Deps(SelectLab)
 	fmt.Println("Running unit tests...")
 	return sh.RunV("go", "test", "./test/", "-run", "TestUT_", "-v")
 }
@@ -33,6 +46,7 @@ func Unit() error {
 func Integration() error {
 	mg.Deps(Clean)
 	mg.Deps(Format)
+	mg.Deps(SelectLab)
 	fmt.Println("Running integration tests...")
 	return sh.RunV("go", "test", "./test/", "-run", "TestIT_", "-v")
 }
