@@ -3,7 +3,10 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Set up environment with keys
-awsume jlucktay
+export AWS_DEFAULT_PROFILE="personal"
+export TF_VAR_state_bucket="jlucktay-tfstate"
+export TF_VAR_state_dynamodb="jlucktay-tfstate"
+export TF_VAR_region="eu-west-2"
 
 # Clean up any old stuff
 find .terraform -type d -not -name .terraform -not -path "*plugins*" -exec rm -rfv -- {} +
