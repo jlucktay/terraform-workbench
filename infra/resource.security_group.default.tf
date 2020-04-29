@@ -1,6 +1,6 @@
 resource "aws_default_security_group" "main" {
   revoke_rules_on_delete = true
-  vpc_id                 = "${aws_vpc.main.id}"
+  vpc_id                 = aws_vpc.main.id
 
   tags = {
     Name = "james.lucktaylor.sg.default"

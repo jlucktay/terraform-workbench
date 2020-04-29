@@ -1,5 +1,5 @@
 resource "aws_default_network_acl" "main" {
-  default_network_acl_id = "${aws_vpc.main.default_network_acl_id}"
+  default_network_acl_id = aws_vpc.main.default_network_acl_id
 
   subnet_ids = [
     "${aws_subnet.private.*.id}",

@@ -2,9 +2,6 @@ terraform {
   backend "s3" {
     acl     = "private"
     encrypt = true
+    key     = "infra/terraform.tfstate"
   }
-}
-
-provider "aws" {
-  region = "${var.region}"
 }
