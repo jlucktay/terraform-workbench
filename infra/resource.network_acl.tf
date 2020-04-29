@@ -4,7 +4,7 @@ resource "aws_default_network_acl" "main" {
   subnet_ids = concat(aws_subnet.private.*.id, aws_subnet.public.*.id)
 
   tags = {
-    Name = "james.lucktaylor.acl"
+    Name = "${local.name_prefix}.acl"
   }
 
   egress {

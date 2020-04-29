@@ -3,7 +3,7 @@ resource "aws_vpc_dhcp_options" "main" {
   domain_name_servers = ["AmazonProvidedDNS"]
 
   tags = {
-    Name = "james.lucktaylor.dopt"
+    Name = "${local.name_prefix}.dopt"
   }
 }
 

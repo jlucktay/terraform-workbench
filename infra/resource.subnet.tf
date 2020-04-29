@@ -9,7 +9,7 @@ resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.main.id
 
   tags = {
-    Name = "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.private"
+    Name = "${local.name_prefix}.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.private"
     Tier = "Private"
   }
 }
@@ -23,7 +23,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
 
   tags = {
-    Name = "james.lucktaylor.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.public"
+    Name = "${local.name_prefix}.subnet.${substr(element(data.aws_availability_zones.available.names, count.index), -1, -1)}.public"
     Tier = "Public"
   }
 }

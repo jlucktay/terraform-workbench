@@ -1,11 +1,11 @@
 resource "aws_security_group" "dmz" {
   description            = "DMZ with access to ports 22, 80, 443 from anywhere"
-  name                   = "james.lucktaylor.sg.dmz"
+  name                   = "${local.name_prefix}.sg.dmz"
   revoke_rules_on_delete = true
   vpc_id                 = aws_vpc.main.id
 
   tags = {
-    Name = "james.lucktaylor.sg.dmz"
+    Name = "${local.name_prefix}.sg.dmz"
   }
 }
 

@@ -3,7 +3,7 @@ resource "aws_default_security_group" "main" {
   vpc_id                 = aws_vpc.main.id
 
   tags = {
-    Name = "james.lucktaylor.sg.default"
+    Name = "${local.name_prefix}.sg.default"
   }
 
   egress {

@@ -3,7 +3,7 @@ resource "aws_default_route_table" "private" {
   default_route_table_id = aws_vpc.main.default_route_table_id
 
   tags = {
-    Name = "james.lucktaylor.rtb.private"
+    Name = "${local.name_prefix}.rtb.private"
   }
 }
 
@@ -19,7 +19,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "james.lucktaylor.rtb.public"
+    Name = "${local.name_prefix}.rtb.public"
   }
 }
 
