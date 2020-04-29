@@ -1,10 +1,7 @@
 resource "aws_default_network_acl" "main" {
   default_network_acl_id = aws_vpc.main.default_network_acl_id
 
-  subnet_ids = [
-    "${aws_subnet.private.*.id}",
-    "${aws_subnet.public.*.id}",
-  ]
+  subnet_ids = concat(aws_subnet.private.*.id, aws_subnet.public.*.id)
 
   tags = {
     Name = "james.lucktaylor.acl"
