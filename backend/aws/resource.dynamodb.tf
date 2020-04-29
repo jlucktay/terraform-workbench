@@ -1,4 +1,4 @@
-resource "aws_dynamodb_table" "state-locking-consistency" {
+resource "aws_dynamodb_table" "state_locking_consistency" {
   hash_key       = "LockID"
   name           = var.state_dynamodb
   read_capacity  = 1

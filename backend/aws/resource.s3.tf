@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "state-storage" {
+resource "aws_s3_bucket" "state_storage" {
   acl           = "private"
   bucket        = var.state_bucket
   force_destroy = false
@@ -21,8 +21,8 @@ resource "aws_s3_bucket" "state-storage" {
   }
 }
 
-resource "aws_s3_bucket_policy" "state-storage" {
-  bucket = aws_s3_bucket.state-storage.id
+resource "aws_s3_bucket_policy" "state_storage" {
+  bucket = aws_s3_bucket.state_storage.id
 
   policy = templatefile(
     join("/", [path.module, "s3.policy.json"]),
