@@ -7,6 +7,7 @@ resource "aws_instance" "main" {
   instance_type               = "t2.large"
   key_name                    = "jlucktay.eu-west-2"
   subnet_id                   = element(data.aws_subnet.public.*.id, count.index)
+  user_data                   = file(join("/", [path.module, "user-data.sh"]))
 
   security_groups = [
     data.aws_security_group.dmz.id
@@ -26,5 +27,3 @@ resource "aws_instance" "main" {
     ]
   }
 }
-
-#   user_data                   = "${file("ec2.awscda.ebs.userdata.sh")}"
