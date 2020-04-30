@@ -8,6 +8,10 @@ resource "aws_instance" "main" {
   key_name                    = "jlucktay.eu-west-2"
   subnet_id                   = element(data.aws_subnet.public.*.id, count.index)
 
+  security_groups = [
+    data.aws_security_group.dmz.id
+  ]
+
   tags = {
     Name = "jlucktay.ec2.rancher.${count.index}"
   }

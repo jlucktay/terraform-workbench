@@ -24,3 +24,15 @@ data "aws_subnet" "public" {
     Tier = "Public"
   }
 }
+
+data "aws_vpc" "main" {
+  filter {
+    name   = "tag:Name"
+    values = ["jlucktay.vpc"]
+  }
+}
+
+data "aws_security_group" "dmz" {
+  name   = "jlucktay.sg.dmz"
+  vpc_id = data.aws_vpc.main.id
+}
