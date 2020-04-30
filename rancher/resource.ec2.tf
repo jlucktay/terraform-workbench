@@ -4,7 +4,7 @@ resource "aws_instance" "main" {
   ami                         = data.aws_ami.ubuntu.id
   associate_public_ip_address = true
   availability_zone           = element(data.aws_availability_zones.available.names, count.index)
-  instance_type               = "t3.micro"
+  instance_type               = "t2.large"
   key_name                    = "jlucktay.eu-west-2"
   subnet_id                   = element(data.aws_subnet.public.*.id, count.index)
 
