@@ -15,6 +15,4 @@ terraform init \
   --backend-config="dynamodb_table=$TF_VAR_state_dynamodb" \
   --input=false
 
-terraform plan --input=false
-
 terraform apply
